@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sinthiya Admin — অর্ডার ড্যাশবোর্ড</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-900:#122A20; --green-700:#1B4332; --gold-600:#B8863B; --gold-500:#C89B3C;
+    --ivory:#FBF8F2; --paper:#F1ECDD; --ink:#211F1A; --ink-soft:#5B5647; --line:#DED4B8;
+    --danger:#A23B2E; --ok:#2D6A4F; --pending:#B8863B;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:"Hind Siliguri",system-ui,sans-serif;
+    padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+  }
+  .wrap{max-width:900px; margin:0 auto; padding:20px 16px 60px;}
+  header{background:var(--green-900); color:var(--ivory); padding:16px 0;}
+  header .wrap{display:flex; justify-content:space-between; align-items:center; padding-top:calc(16px + env(safe-area-inset-top,0px));}
+  header h1{font-size:19px; margin:0; font-weight:600;}
+
+  #loginBox{max-width:340px; margin:80px auto; background:var(--ivory); border:1px solid var(--line); border-radius:6px; padding:26px; text-align:center;}
+  #loginBox input{width:100%; padding:11px; border-radius:4px; border:1px solid var(--line); font-size:15px; margin:14px 0; font-family:inherit;}
+  #loginBox button{width:100%; padding:11px; border-radius:4px; border:none; background:var(--green-700); color:var(--ivory); font-weight:600; cursor:pointer; font-family:inherit;}
+  #loginMsg{color:var(--danger); font-size:13.5px; min-height:18px;}
+
+  #dashboard{display:none;}
+  .stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:18px 0 24px;}
+  .stat{background:var(--ivory); border:1px solid var(--line); border-radius:6px; padding:14px;}
+  .stat .n{font-size:24px; font-weight:700;}
+  .stat .l{font-size:12.5px; color:var(--ink-soft);}
+
+  .filter-row{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .filter-row button{
+    padding:7px 14px; border-radius:999px; border:1px solid var(--line); background:var(--ivory);
+    font-size:13.5px; cursor:pointer; font-family:inherit;
+  }
+  .filter-row button.active{background:var(--green-700); color:var(--ivory); border-color:var(--green-700);}
+
+  .order-card{background:var(--ivory); border:1px solid var(--line); border-radius:6px; padding:16px; margin-bottom:12px;}
+  .order-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .order-top .num{font-weight:700; font-size:15.5px;}
+  .badge{font-size:12px; padding:3px 10px; border-radius:999px; font-weight:600;}
+  .badge.pending{background:#F3E4C4; color:var(--pending);}
+  .badge.confirmed{background:#D9EBDF; color:var(--ok);}
+  .badge.cancelled, .badge.returned{background:#F3D6D1; color:var(--danger);}
+  .order-meta{font-size:14px; color:var(--ink-soft); margin:8px 0;}
+  .order-items{font-size:14px; margin:8px 0; padding-left:18px;}
+  .order-total{font-weight:700; font-size:15.5px; margin:6px 0;}
+  .order-actions{display:flex; gap:10px; margin-top:12px;}
+  .order-actions button{
+    flex:1; padding:9px; border-radius:4px; border:none; font-weight:600; cursor:pointer; font-size:14px; font-family:inherit;
+  }
+  .btn-confirm{background:var(--green-700); color:var(--ivory);}
+  .btn-cancel{background:transparent; color:var(--danger); border:1px solid var(--danger) !important;}
+  .btn-confirm:disabled, .btn-cancel:disabled{opacity:.5; cursor:default;}
+  .empty{text-align:center; color:var(--ink-soft); padding:40px 0; font-size:14.5px;}
+  .toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--green-900); color:var(--ivory); padding:12px 20px; border-radius:999px; font-size:14px; display:none; z-index:50;}
+</style>
+</head>
+<body>
+
+<div id="loginBox">
+  <h2 style="margin-top:0;">অ্যাডমিন লগইন</h2>
+  <input type="password" id="pwInput" placeholder="পাসওয়ার্ড">
+  <button id="loginBtn">প্রবেশ করুন</button>
+  <div id="loginMsg"></div>
+</div>
+
+<div id="dashboard">
+  <header><div class="wrap"><h1>Sinthiya Organic — অর্ডার ড্যাশবোর্ড</h1></div></header>
+  <div class="wrap">
+    <div class="stat-row">
+      <div class="stat"><div class="n" id="statPending">0</div><div class="l">পেন্ডিং</div></div>
+      <div class="stat"><div class="n" id="statConfirmed">0</div><div class="l">কনফার্মড</div></div>
+      <div class="stat"><div class="n" id="statTotal">৳0</div><div class="l">আজকের মোট বিক্রয়</div></div>
+    </div>
+    <div class="filter-row" id="filterRow">
+      <button data-f="pending" class="active">পেন্ডিং</button>
+      <button data-f="confirmed">কনফার্মড</button>
+      <button data-f="cancelled">বাতিল</button>
+      <button data-f="all">সব</button>
+    </div>
+    <div id="orderList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FN_BASE = "https://jlussgczauobxfdigcpf.supabase.co/functions/v1";
+let PASSWORD = "";
+let ORDERS = [];
+let filter = "pending";
+
+const statusLabel = { pending:"পেন্ডিং", confirmed:"কনফার্মড", cancelled:"বাতিল", returned:"রিটার্ন", shipped:"শিপড", delivered:"ডেলিভারড" };
+
+document.getElementById("loginBtn").addEventListener("click", login);
+document.getElementById("pwInput").addEventListener("keydown", e=>{ if(e.key==="Enter") login(); });
+
+async function login(){
+  const pw = document.getElementById("pwInput").value;
+  const msg = document.getElementById("loginMsg");
+  msg.textContent = "যাচাই করা হচ্ছে...";
+  try{
+    const res = await fetch(`${FN_BASE}/list-orders`, { headers: { "x-admin-password": pw } });
+    if(res.status === 401){ msg.textContent = "ভুল পাসওয়ার্ড।"; return; }
+    if(!res.ok) throw new Error("সার্ভার এরর");
+    const data = await res.json();
+    PASSWORD = pw;
+    ORDERS = data.orders || [];
+    sessionStorage.setItem("sinthiya_admin_pw", pw);
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    render();
+  }catch(err){ msg.textContent = "সংযোগ ব্যর্থ: " + err.message; }
+}
+
+function toast(t){
+  const el = document.getElementById("toast");
+  el.textContent = t; el.style.display = "block";
+  setTimeout(()=>{ el.style.display = "none"; }, 3000);
+}
+
+function render(){
+  const list = document.getElementById("orderList");
+  const filtered = filter === "all" ? ORDERS : ORDERS.filter(o=>o.status===filter);
+  document.getElementById("statPending").textContent = ORDERS.filter(o=>o.status==="pending").length;
+  document.getElementById("statConfirmed").textContent = ORDERS.filter(o=>o.status==="confirmed").length;
+  const today = new Date().toISOString().slice(0,10);
+  const todayTotal = ORDERS.filter(o=>o.created_at.slice(0,10)===today && o.status!=="cancelled").reduce((s,o)=>s+o.total,0);
+  document.getElementById("statTotal").textContent = "৳" + todayTotal;
+
+  if(filtered.length === 0){ list.innerHTML = '<div class="empty">এই তালিকায় কোনো অর্ডার নেই।</div>'; return; }
+
+  list.innerHTML = filtered.map(o=>{
+    const items = (o.order_items||[]).map(i=>`<li>${i.product_name} × ${i.quantity} — ৳${i.unit_price*i.quantity}</li>`).join("");
+    const canAct = o.status === "pending";
+    return `
+    <div class="order-card">
+      <div class="order-top">
+        <span class="num">${o.order_number}</span>
+        <span class="badge ${o.status}">${statusLabel[o.status]||o.status}</span>
+      </div>
+      <div class="order-meta">${o.customer_name} · ${o.phone} · ${o.area==='dhaka'?'ঢাকা':'ঢাকার বাইরে'}</div>
+      <div class="order-meta">${o.address}</div>
+      <ul class="order-items">${items}</ul>
+      <div class="order-meta">ডেলিভারি চার্জ: ৳${o.delivery_charge}</div>
+      <div class="order-total">সর্বমোট: ৳${o.total}</div>
+      ${canAct ? `
+      <div class="order-actions">
+        <button class="btn-confirm" onclick="act('${o.id}','confirm',this)">কনফার্ম করে SteadFast-এ পাঠান</button>
+        <button class="btn-cancel" onclick="act('${o.id}','cancel',this)">বাতিল</button>
+      </div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+async function act(orderId, action, btnEl){
+  const card = btnEl.closest(".order-card");
+  card.querySelectorAll("button").forEach(b=>b.disabled = true);
+  btnEl.textContent = action === "confirm" ? "পাঠানো হচ্ছে..." : "বাতিল করা হচ্ছে...";
+  try{
+    const res = await fetch(`${FN_BASE}/confirm-order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": PASSWORD },
+      body: JSON.stringify({ order_id: orderId, action }),
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "ব্যর্থ হয়েছে");
+    toast(action === "confirm" ? "SteadFast-এ বুকিং হয়ে গেছে ✓" : "অর্ডার বাতিল হয়েছে");
+    const o = ORDERS.find(x=>x.id===orderId);
+    if(o) o.status = data.status;
+    render();
+  }catch(err){
+    toast("এরর: " + err.message);
+    card.querySelectorAll("button").forEach(b=>b.disabled = false);
+    btnEl.textContent = action === "confirm" ? "কনফার্ম করে SteadFast-এ পাঠান" : "বাতিল";
+  }
+}
+
+document.getElementById("filterRow").addEventListener("click", e=>{
+  if(e.target.tagName !== "BUTTON") return;
+  document.querySelectorAll("#filterRow button").forEach(b=>b.classList.remove("active"));
+  e.target.classList.add("active");
+  filter = e.target.dataset.f;
+  render();
+});
+
+// auto-login if password already in this session
+const savedPw = sessionStorage.getItem("sinthiya_admin_pw");
+if(savedPw){ document.getElementById("pwInput").value = savedPw; login(); }
+</script>
+</body>
+</html>

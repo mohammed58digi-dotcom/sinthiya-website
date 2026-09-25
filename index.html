@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sinthiya Organic Oil — খাঁটি কোল্ড প্রেসড হেয়ার কেয়ার</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-900:#122A20; --green-700:#1B4332; --green-600:#2D6A4F;
+    --gold-600:#B8863B; --gold-500:#C89B3C; --gold-200:#EFDFB8;
+    --ivory:#FBF8F2; --paper:#F4EEE0; --ink:#211F1A; --ink-soft:#5B5647;
+    --line:#DED4B8; --danger:#A23B2E; --radius:4px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0; background:var(--ivory); color:var(--ink);
+    font-family:"Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    line-height:1.6;
+  }
+  h1,h2,h3,.serif{ font-family:"Tiro Bangla","Noto Serif Bengali",Georgia,serif; font-weight:400; }
+  a{color:inherit;}
+  .wrap{max-width:1040px; margin:0 auto; padding:0 24px;}
+
+  /* HEADER */
+  header.site{
+    background:var(--green-900); color:var(--ivory);
+    padding:16px 0; position:sticky; top:0; z-index:20;
+    border-bottom:1px solid var(--gold-600);
+  }
+  header.site .wrap{display:flex; align-items:center; justify-content:space-between;}
+  .brand{font-family:"Tiro Bangla",serif; font-size:22px; letter-spacing:.02em;}
+  .brand span{color:var(--gold-500);}
+  .header-cta{
+    background:var(--gold-500); color:var(--green-900); text-decoration:none;
+    padding:9px 18px; border-radius:999px; font-weight:600; font-size:14px;
+  }
+
+  /* HERO */
+  .hero{
+    background:
+      radial-gradient(circle at 85% -10%, rgba(200,155,60,.35), transparent 55%),
+      linear-gradient(180deg, var(--green-900), var(--green-700));
+    color:var(--ivory); padding:64px 0 72px; position:relative; overflow:hidden;
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero-eyebrow{color:var(--gold-200); font-size:15px; margin:0 0 14px;}
+  .hero h1{font-size:clamp(30px,5vw,46px); line-height:1.25; margin:0 0 18px; max-width:14ch;}
+  .hero p.lead{font-size:17px; color:#E6E1D2; max-width:52ch; margin:0 0 30px;}
+  .trust-row{display:flex; flex-wrap:wrap; gap:10px 22px; font-size:14px; color:var(--gold-200);}
+  .trust-row span{display:flex; align-items:center; gap:8px;}
+  .trust-row svg{flex:none;}
+  .hero-btn{
+    display:inline-block; margin-top:30px; background:var(--gold-500); color:var(--green-900);
+    text-decoration:none; padding:13px 26px; border-radius:999px; font-weight:600; font-size:15px;
+  }
+
+  /* SECTION HEADINGS */
+  .section{padding:56px 0;}
+  .section h2{font-size:clamp(24px,3.4vw,30px); margin:0 0 8px;}
+  .section .sub{color:var(--ink-soft); font-size:15px; margin:0 0 34px; max-width:56ch;}
+
+  /* PRODUCTS */
+  .products{background:var(--paper);}
+  .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media(max-width:820px){.product-grid{grid-template-columns:1fr;}}
+  .p-card{
+    background:var(--ivory); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 22px 22px; display:flex; flex-direction:column;
+  }
+  .p-card.featured{border-color:var(--gold-500); box-shadow:0 0 0 1px var(--gold-500) inset;}
+  .p-tag{font-size:13px; color:var(--gold-600); font-weight:600; margin:0 0 6px;}
+  .p-card h3{font-size:22px; margin:0 0 4px;}
+  .p-price{font-size:15px; color:var(--ink-soft); margin:0 0 16px;}
+  .p-price b{font-size:22px; color:var(--ink); font-family:"Tiro Bangla",serif;}
+  .p-includes{list-style:none; margin:0 0 20px; padding:0; font-size:14.5px; color:var(--ink-soft);}
+  .p-includes li{padding:6px 0 6px 22px; position:relative; border-top:1px solid var(--line);}
+  .p-includes li:first-child{border-top:none;}
+  .p-includes li::before{content:"·"; position:absolute; left:6px; color:var(--gold-600); font-size:22px; line-height:1; top:2px;}
+  .p-select{
+    margin-top:auto; width:100%; padding:11px; border-radius:999px; border:1px solid var(--green-700);
+    background:transparent; color:var(--green-700); font-weight:600; font-size:15px; cursor:pointer;
+    font-family:inherit;
+  }
+  .p-select.active{background:var(--green-700); color:var(--ivory);}
+
+  /* WHY */
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+  @media(max-width:820px){.why-grid{grid-template-columns:1fr;}}
+  .why-item{border-top:2px solid var(--gold-500); padding-top:14px;}
+  .why-item h3{font-size:18px; margin:0 0 8px;}
+  .why-item p{font-size:14.5px; color:var(--ink-soft); margin:0;}
+
+  /* ORDER */
+  .order{background:var(--green-900); color:var(--ivory);}
+  .order h2{color:var(--ivory);}
+  .order .sub{color:#CFC9B6;}
+  .order-layout{display:grid; grid-template-columns:1.1fr 1fr; gap:40px; align-items:start;}
+  @media(max-width:860px){.order-layout{grid-template-columns:1fr;}}
+  .order-summary{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); border-radius:var(--radius); padding:22px;}
+  .order-summary h3{margin:0 0 14px; font-size:17px; color:var(--gold-200); font-family:inherit; font-weight:600;}
+  .sum-row{display:flex; justify-content:space-between; padding:8px 0; font-size:14.5px; border-bottom:1px solid rgba(255,255,255,.1);}
+  .sum-row.total{font-size:17px; font-weight:700; border-bottom:none; padding-top:14px; color:var(--gold-200);}
+  form.order-form{display:grid; gap:14px;}
+  .field label{display:block; font-size:13.5px; color:var(--gold-200); margin:0 0 6px;}
+  .field input, .field textarea, .field select{
+    width:100%; padding:11px 12px; border-radius:var(--radius); border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.06); color:var(--ivory); font-family:inherit; font-size:15px;
+  }
+  .field input::placeholder, .field textarea::placeholder{color:#9FB0A5;}
+  .area-toggle{display:flex; gap:10px;}
+  .area-toggle button{
+    flex:1; padding:11px; border-radius:var(--radius); border:1px solid rgba(255,255,255,.25);
+    background:transparent; color:var(--ivory); font-family:inherit; font-size:14.5px; cursor:pointer;
+  }
+  .area-toggle button.active{background:var(--gold-500); color:var(--green-900); border-color:var(--gold-500); font-weight:600;}
+  .qty-row{display:flex; align-items:center; gap:14px;}
+  .qty-row button{
+    width:36px; height:36px; border-radius:999px; border:1px solid rgba(255,255,255,.3);
+    background:transparent; color:var(--ivory); font-size:18px; cursor:pointer; line-height:1;
+  }
+  .submit-btn{
+    margin-top:6px; background:var(--gold-500); color:var(--green-900); border:none; padding:14px;
+    border-radius:999px; font-weight:700; font-size:16px; cursor:pointer; font-family:inherit;
+  }
+  .submit-btn:disabled{opacity:.6; cursor:default;}
+  .form-msg{font-size:14px; padding:12px 14px; border-radius:var(--radius); margin-top:4px; display:none;}
+  .form-msg.ok{display:block; background:rgba(184,134,59,.2); border:1px solid var(--gold-500); color:var(--gold-200);}
+  .form-msg.err{display:block; background:rgba(162,59,46,.25); border:1px solid var(--danger); color:#F3C9C3;}
+
+  footer{background:var(--green-900); color:#9FB0A5; text-align:center; padding:26px 0; font-size:13.5px; border-top:1px solid rgba(255,255,255,.1);}
+
+  :root:not([data-theme="light"]) body{}
+  @media (prefers-color-scheme: dark){ /* palette already reads well in dark viewers; no override needed */ }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand">Sinthiya <span>Organic</span></div>
+    <a href="#order" class="header-cta">অর্ডার করুন</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="hero-eyebrow serif">চুলের যত্নে প্রাকৃতিক ফিরে যাওয়ার গল্প</p>
+    <h1>খাঁটি কোল্ড প্রেসড তেল, চুলের গোড়ায় আসল যত্ন</h1>
+    <p class="lead">নারিকেল থেকে কোল্ড প্রেসে বের করা তেল, ভেষজ মিশিয়ে রোদে ইনফিউজড — কোনো কেমিক্যাল ছাড়া, শুধু যা আপনার চুলের দরকার।</p>
+    <div class="trust-row">
+      <span>১০০% কোল্ড প্রেসড, কোনো কেমিক্যাল নেই</span>
+      <span>ক্যাশ অন ডেলিভারি</span>
+      <span>সারা বাংলাদেশে হোম ডেলিভারি</span>
+    </div>
+    <a href="#products" class="hero-btn">কম্বো দেখুন</a>
+  </div>
+</section>
+
+<section class="section products" id="products">
+  <div class="wrap">
+    <h2>আপনার জন্য কোন কম্বো</h2>
+    <p class="sub">প্রতিটা কম্বো একটা সম্পূর্ণ রুটিন — তেল দিয়ে শুরু, প্রয়োজনমতো হেয়ার প্যাক ও শ্যাম্পু যোগ করা।</p>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>কেন Sinthiya</h2>
+    <p class="sub">বাজারের বেশিরভাগ তেল হাই-হিটে বানানো হয়, যাতে পুষ্টির একটা বড় অংশ নষ্ট হয়ে যায়।</p>
+    <div class="why-grid">
+      <div class="why-item">
+        <h3>কোল্ড প্রেসড প্রসেস</h3>
+        <p>কোনো হিট ছাড়াই নারিকেল থেকে তেল বের করা হয়, তাই পুষ্টি অক্ষত থাকে।</p>
+      </div>
+      <div class="why-item">
+        <h3>রোদে ভেষজ ইনফিউজড</h3>
+        <p>ঐতিহ্যবাহী পদ্ধতিতে ভেষজ মিশিয়ে রোদে রেখে তৈরি, কোনো শর্টকাট নেই।</p>
+      </div>
+      <div class="why-item">
+        <h3>ঝুঁকিহীন অর্ডার</h3>
+        <p>আগে টাকা লাগে না — প্রোডাক্ট হাতে পেয়ে দাম দিন।</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section order" id="order">
+  <div class="wrap">
+    <h2>অর্ডার করুন</h2>
+    <p class="sub">নিচের ফর্মটি পূরণ করুন — আমরা শীঘ্রই কল করে অর্ডার নিশ্চিত করব।</p>
+    <div class="order-layout">
+      <form class="order-form" id="orderForm">
+        <div class="field">
+          <label>কোন কম্বো নেবেন</label>
+          <select id="productSelect"></select>
+        </div>
+        <div class="field">
+          <label>পরিমাণ</label>
+          <div class="qty-row">
+            <button type="button" id="qtyMinus">−</button>
+            <span id="qtyVal" style="min-width:20px;text-align:center;">1</span>
+            <button type="button" id="qtyPlus">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>আপনার নাম</label>
+          <input type="text" id="custName" placeholder="পূর্ণ নাম" required>
+        </div>
+        <div class="field">
+          <label>মোবাইল নাম্বার</label>
+          <input type="tel" id="custPhone" placeholder="01XXXXXXXXX" required>
+        </div>
+        <div class="field">
+          <label>সম্পূর্ণ ঠিকানা</label>
+          <textarea id="custAddress" rows="2" placeholder="বাসা/রোড/থানা/জেলা" required></textarea>
+        </div>
+        <div class="field">
+          <label>এলাকা</label>
+          <div class="area-toggle">
+            <button type="button" class="area-btn active" data-area="dhaka">ঢাকার মধ্যে (৳৮০)</button>
+            <button type="button" class="area-btn" data-area="outside">ঢাকার বাইরে (৳১৩০)</button>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">অর্ডার নিশ্চিত করুন</button>
+        <div class="form-msg" id="formMsg"></div>
+      </form>
+
+      <div class="order-summary">
+        <h3>অর্ডার সামারি</h3>
+        <div class="sum-row"><span id="sumProduct">—</span><span id="sumProductPrice">৳0</span></div>
+        <div class="sum-row"><span>ডেলিভারি চার্জ</span><span id="sumDelivery">৳80</span></div>
+        <div class="sum-row total"><span>সর্বমোট</span><span id="sumTotal">৳0</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 Sinthiya Organic Oil · সারা বাংলাদেশে ক্যাশ অন ডেলিভারি</footer>
+
+<script>
+const FN_BASE = "https://jlussgczauobxfdigcpf.supabase.co/functions/v1";
+
+const PRODUCTS = [
+  { id: null, key: "500", name: "কম্বো ৳৫০০", price: 500, tag: "শুরুর জন্য সেরা",
+    includes: ["১০০মিলি কোল্ড প্রেসড তেল", "১০০গ্রাম হেয়ার প্যাক"] },
+  { id: null, key: "600", name: "কম্বো ৳৬০০", price: 600, tag: "সবচেয়ে জনপ্রিয়", featured: true,
+    includes: ["১০০মিলি কোল্ড প্রেসড তেল", "১০০গ্রাম হেয়ার প্যাক", "১০০মিলি অর্গানিক শ্যাম্পু"] },
+  { id: null, key: "1000", name: "কম্বো ৳১০০০", price: 1000, tag: "সম্পূর্ণ রুটিন",
+    includes: ["২০০মিলি কোল্ড প্রেসড তেল", "২০০গ্রাম হেয়ার প্যাক", "১০০মিলি অর্গানিক শ্যাম্পু"] },
+];
+
+// NOTE: product_id (uuid) must be filled in from the products table (see admin.html console on first load,
+// or query Supabase) — placeholders below are replaced at deploy time.
+const PRODUCT_IDS = {
+  "500": "5f0ba5fd-124a-41c1-aa0f-51aaacf83637",
+  "600": "784ec7b9-6adb-4639-99d5-1297337aa413",
+  "1000": "ee449f81-c521-4c2c-8f9b-5f71f0c614b5",
+};
+
+let selectedKey = "600";
+let qty = 1;
+let area = "dhaka";
+
+function renderProducts(){
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
+  const select = document.getElementById("productSelect");
+  select.innerHTML = "";
+  PRODUCTS.forEach(p=>{
+    const card = document.createElement("div");
+    card.className = "p-card" + (p.featured ? " featured" : "");
+    card.innerHTML = `
+      <p class="p-tag">${p.tag}</p>
+      <h3>${p.name}</h3>
+      <p class="p-price"><b>৳${p.price}</b> / কম্বো</p>
+      <ul class="p-includes">${p.includes.map(i=>`<li>${i}</li>`).join("")}</ul>
+      <button class="p-select ${p.key===selectedKey?'active':''}" data-key="${p.key}">এটা বেছে নিন</button>
+    `;
+    grid.appendChild(card);
+    const opt = document.createElement("option");
+    opt.value = p.key; opt.textContent = `${p.name} — ৳${p.price}`;
+    select.appendChild(opt);
+  });
+  select.value = selectedKey;
+  grid.querySelectorAll(".p-select").forEach(btn=>{
+    btn.addEventListener("click", ()=>{ selectedKey = btn.dataset.key; renderProducts(); updateSummary(); });
+  });
+}
+
+function updateSummary(){
+  const p = PRODUCTS.find(x=>x.key===selectedKey);
+  document.getElementById("productSelect").value = selectedKey;
+  document.getElementById("sumProduct").textContent = `${p.name} × ${qty}`;
+  document.getElementById("sumProductPrice").textContent = `৳${p.price*qty}`;
+  const delivery = area === "dhaka" ? 80 : 130;
+  document.getElementById("sumDelivery").textContent = `৳${delivery}`;
+  document.getElementById("sumTotal").textContent = `৳${p.price*qty + delivery}`;
+  document.getElementById("qtyVal").textContent = qty;
+}
+
+document.getElementById("productSelect").addEventListener("change", e=>{ selectedKey = e.target.value; renderProducts(); updateSummary(); });
+document.getElementById("qtyMinus").addEventListener("click", ()=>{ qty = Math.max(1, qty-1); updateSummary(); });
+document.getElementById("qtyPlus").addEventListener("click", ()=>{ qty = Math.min(20, qty+1); updateSummary(); });
+document.querySelectorAll(".area-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".area-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active"); area = btn.dataset.area; updateSummary();
+  });
+});
+
+document.getElementById("orderForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const msg = document.getElementById("formMsg");
+  const btn = document.getElementById("submitBtn");
+  msg.className = "form-msg"; msg.textContent = "";
+
+  const name = document.getElementById("custName").value.trim();
+  const phone = document.getElementById("custPhone").value.trim();
+  const address = document.getElementById("custAddress").value.trim();
+  const productId = PRODUCT_IDS[selectedKey];
+
+  if(!name || !phone || !address){
+    msg.className = "form-msg err"; msg.textContent = "সব ঘর পূরণ করুন।"; return;
+  }
+  if(productId.startsWith("REPLACE_")){
+    msg.className = "form-msg err"; msg.textContent = "সেটআপ অসম্পূর্ণ — প্রোডাক্ট আইডি বসানো হয়নি।"; return;
+  }
+
+  btn.disabled = true; btn.textContent = "পাঠানো হচ্ছে...";
+  try{
+    const res = await fetch(`${FN_BASE}/create-order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_name: name, phone, address, area,
+        items: [{ product_id: productId, quantity: qty }],
+      }),
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "অর্ডার ব্যর্থ হয়েছে");
+    msg.className = "form-msg ok";
+    msg.textContent = `অর্ডার সফল হয়েছে! অর্ডার নাম্বার: ${data.order_number} — মোট ৳${data.total}। আমরা শীঘ্রই কল করব।`;
+    document.getElementById("orderForm").reset();
+    qty = 1; area = "dhaka";
+    document.querySelectorAll(".area-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelector('.area-btn[data-area="dhaka"]').classList.add("active");
+    updateSummary();
+  }catch(err){
+    msg.className = "form-msg err";
+    msg.textContent = "কিছু ভুল হয়েছে: " + err.message;
+  }finally{
+    btn.disabled = false; btn.textContent = "অর্ডার নিশ্চিত করুন";
+  }
+});
+
+renderProducts();
+updateSummary();
+</script>
+</body>
+</html>

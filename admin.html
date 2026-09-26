@@ -84,7 +84,7 @@
       <button data-f="confirmed">কনফার্মড</button>
       <button data-f="cancelled">বাতিল</button>
       <button data-f="all">সব</button>
-      <button data-f="images" style="margin-left:auto;">প্রোডাক্ট ছবি</button>
+      <button data-f="images" style="margin-left:auto;">প্রোডাক্ট ম্যানেজমেন্ট</button>
     </div>
     <div id="orderList"></div>
     <div id="imagePanel" style="display:none;"></div>
@@ -202,7 +202,7 @@ document.getElementById("filterRow").addEventListener("click", e=>{
 });
 
 const SUPABASE_URL = "https://jlussgczauobxfdigcpf.supabase.co";
-const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdXNzZ2N6YXVvYnhmZGlnY3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODgwOTgsImV4cCI6MjEwNTY2NDA5OH0.9VedHmJeRP44Q0WcpAmXRzNgod473Oslk3oVrZpllzQ";
+const ANON_KEY = "sb_publishable_7DjL6HMbAKC2BSe518DNbg_sD1KEMgI";
 
 async function loadImagePanel(){
   const panel = document.getElementById("imagePanel");
@@ -211,17 +211,50 @@ async function loadImagePanel(){
     headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` },
   });
   const products = await res.json();
-  panel.innerHTML = products.map(p => `
-    <div class="order-card" id="imgcard-${p.id}">
-      <div class="order-top"><span class="num">${p.name}</span></div>
-      <div style="margin:12px 0;">
-        ${p.image_url ? `<img src="${p.image_url}" style="width:100%;max-width:260px;border-radius:8px;display:block;">` : `<div style="color:var(--ink-soft);font-size:14px;">এখনো কোনো ছবি নেই</div>`}
+  panel.innerHTML = products.map(p => productCardHtml(p)).join("") + newProductCardHtml();
+}
+
+function productCardHtml(p){
+  const pid = p.id;
+  return `
+    <div class="order-card" id="card-${pid}">
+      <div class="order-top"><span class="num">${p.name}</span>
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="active-${pid}" ${p.active ? "checked" : ""}> সক্রিয়
+        </label>
       </div>
-      <input type="file" accept="image/*" id="file-${p.id}" style="margin-bottom:10px;display:block;">
-      <button class="btn-confirm" style="width:100%;" onclick="uploadImage('${p.id}')">ছবি আপলোড করুন</button>
-      <div id="status-${p.id}" style="font-size:13px;color:var(--ink-soft);margin-top:8px;"></div>
-    </div>
-  `).join("");
+      <div style="margin:10px 0;">
+        ${p.image_url ? `<img src="${p.image_url}" style="width:100%;max-width:220px;border-radius:8px;display:block;">` : `<div style="color:var(--ink-soft);font-size:14px;">ছবি নেই</div>`}
+      </div>
+      <input type="file" accept="image/*" id="file-${pid}" style="margin-bottom:10px;display:block;font-size:13px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <div><label style="font-size:12px;color:var(--ink-soft);">নাম</label><input type="text" id="name-${pid}" value="${p.name}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">দাম (৳)</label><input type="number" id="price-${pid}" value="${p.price}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">কেনা খরচ (৳)</label><input type="number" id="cost-${pid}" value="${p.cost}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">তেল (মিলি)</label><input type="number" id="oil-${pid}" value="${p.oil_ml||''}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">হেয়ার প্যাক (গ্রাম)</label><input type="number" id="pack-${pid}" value="${p.hairpack_g||''}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">শ্যাম্পু (মিলি)</label><input type="number" id="sh-${pid}" value="${p.shampoo_ml||''}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+      </div>
+      <button class="btn-confirm" style="width:100%;" onclick="saveProduct('${pid}')">সেভ করুন</button>
+      <div id="status-${pid}" style="font-size:13px;color:var(--ink-soft);margin-top:8px;"></div>
+    </div>`;
+}
+
+function newProductCardHtml(){
+  return `
+    <div class="order-card" style="border:2px dashed var(--line);">
+      <div class="order-top"><span class="num">➕ নতুন প্রোডাক্ট যোগ করুন</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">
+        <div><label style="font-size:12px;color:var(--ink-soft);">নাম</label><input type="text" id="name-new" placeholder="কম্বো ৳৭০০" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">দাম (৳)</label><input type="number" id="price-new" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">কেনা খরচ (৳)</label><input type="number" id="cost-new" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">তেল (মিলি)</label><input type="number" id="oil-new" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">হেয়ার প্যাক (গ্রাম)</label><input type="number" id="pack-new" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+        <div><label style="font-size:12px;color:var(--ink-soft);">শ্যাম্পু (মিলি)</label><input type="number" id="sh-new" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;"></div>
+      </div>
+      <button class="btn-confirm" style="width:100%;" onclick="saveProduct('new')">প্রোডাক্ট তৈরি করুন</button>
+      <div id="status-new" style="font-size:13px;color:var(--ink-soft);margin-top:8px;"></div>
+    </div>`;
 }
 
 function fileToBase64(file){
@@ -233,21 +266,41 @@ function fileToBase64(file){
   });
 }
 
-async function uploadImage(productId){
-  const input = document.getElementById(`file-${productId}`);
-  const status = document.getElementById(`status-${productId}`);
-  const file = input.files[0];
-  if(!file){ status.textContent = "প্রথমে একটা ছবি বেছে নিন।"; return; }
-  status.textContent = "আপলোড হচ্ছে...";
+async function saveProduct(pid){
+  const status = document.getElementById(`status-${pid}`);
+  const isNew = pid === "new";
+  const body = {
+    id: isNew ? undefined : pid,
+    name: document.getElementById(`name-${pid}`).value.trim(),
+    price: document.getElementById(`price-${pid}`).value,
+    cost: document.getElementById(`cost-${pid}`).value,
+    oil_ml: document.getElementById(`oil-${pid}`).value || null,
+    hairpack_g: document.getElementById(`pack-${pid}`).value || null,
+    shampoo_ml: document.getElementById(`sh-${pid}`).value || null,
+    active: isNew ? true : document.getElementById(`active-${pid}`).checked,
+  };
+  if(!body.name || !body.price || !body.cost){ status.textContent = "নাম, দাম, কেনা খরচ আবশ্যক।"; return; }
+  status.textContent = "সেভ হচ্ছে...";
   try{
-    const base64 = await fileToBase64(file);
-    const res = await fetch(`${FN_BASE}/upload-image`, {
+    const res = await fetch(`${FN_BASE}/manage-product`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-admin-password": PASSWORD },
-      body: JSON.stringify({ product_id: productId, filename: file.name, image_base64: base64 }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || "ব্যর্থ হয়েছে");
+    const newId = data.product.id;
+
+    const fileInput = document.getElementById(`file-${pid}`);
+    if(fileInput && fileInput.files[0]){
+      status.textContent = "ছবি আপলোড হচ্ছে...";
+      const base64 = await fileToBase64(fileInput.files[0]);
+      await fetch(`${FN_BASE}/upload-image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-password": PASSWORD },
+        body: JSON.stringify({ product_id: newId, filename: fileInput.files[0].name, image_base64: base64 }),
+      });
+    }
     status.textContent = "সফল হয়েছে ✓";
     loadImagePanel();
   }catch(err){ status.textContent = "এরর: " + err.message; }

@@ -6,194 +6,209 @@
 <title>Sinthiya Organic Oil — খাঁটি কোল্ড প্রেসড হেয়ার কেয়ার</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Baloo+Da+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --green-900:#122A20; --green-700:#1B4332; --green-600:#2D6A4F;
-    --gold-600:#B8863B; --gold-500:#C89B3C; --gold-200:#EFDFB8;
-    --ivory:#FBF8F2; --paper:#F4EEE0; --ink:#211F1A; --ink-soft:#5B5647;
-    --line:#DED4B8; --danger:#A23B2E; --radius:4px;
+    --ink:#14171A; --ink-soft:#5A6169; --line:#E7E9EC;
+    --paper:#FFFFFF; --bg:#F6F8F7;
+    --brand:#0E9E6D; --brand-dark:#0A7A54; --brand-light:#E4F7EF;
+    --accent:#FFB020; --accent-dark:#E0940A;
+    --danger:#D64545;
   }
   *{box-sizing:border-box;}
-  html{scroll-padding-top:env(safe-area-inset-top,0px);}
   body{
-    margin:0; background:var(--ivory); color:var(--ink);
-    font-family:"Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Hind Siliguri",system-ui,sans-serif;
     padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
-    line-height:1.6;
+    line-height:1.65;
   }
-  h1,h2,h3,.serif{ font-family:"Tiro Bangla","Noto Serif Bengali",Georgia,serif; font-weight:400; }
-  a{color:inherit;}
-  .wrap{max-width:1040px; margin:0 auto; padding:0 24px;}
+  h1,h2,h3{font-family:"Baloo Da 2","Hind Siliguri",sans-serif; font-weight:700; margin:0; line-height:1.25;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
 
-  /* HEADER */
   header.site{
-    background:var(--green-900); color:var(--ivory);
-    padding:16px 0; position:sticky; top:0; z-index:20;
-    border-bottom:1px solid var(--gold-600);
+    background:var(--paper); position:sticky; top:0; z-index:20;
+    border-bottom:1px solid var(--line); padding:14px 0;
   }
   header.site .wrap{display:flex; align-items:center; justify-content:space-between;}
-  .brand{font-family:"Tiro Bangla",serif; font-size:22px; letter-spacing:.02em;}
-  .brand span{color:var(--gold-500);}
+  .brand{font-family:"Baloo Da 2",sans-serif; font-weight:800; font-size:21px; color:var(--brand-dark);}
   .header-cta{
-    background:var(--gold-500); color:var(--green-900); text-decoration:none;
-    padding:9px 18px; border-radius:999px; font-weight:600; font-size:14px;
+    background:var(--ink); color:#fff; text-decoration:none; padding:10px 20px;
+    border-radius:10px; font-weight:700; font-size:14.5px;
   }
 
-  /* HERO */
-  .hero{
-    background:
-      radial-gradient(circle at 85% -10%, rgba(200,155,60,.35), transparent 55%),
-      linear-gradient(180deg, var(--green-900), var(--green-700));
-    color:var(--ivory); padding:64px 0 72px; position:relative; overflow:hidden;
+  .hero{background:var(--brand-light); padding:52px 0 60px;}
+  .hero-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;}
+  @media(max-width:800px){.hero-grid{grid-template-columns:1fr;}}
+  .pill{
+    display:inline-flex; align-items:center; gap:6px; background:var(--paper); border:1px solid var(--line);
+    padding:6px 14px; border-radius:999px; font-size:13.5px; font-weight:600; color:var(--brand-dark); margin-bottom:16px;
   }
-  .hero .wrap{position:relative; z-index:2;}
-  .hero-eyebrow{color:var(--gold-200); font-size:15px; margin:0 0 14px;}
-  .hero h1{font-size:clamp(30px,5vw,46px); line-height:1.25; margin:0 0 18px; max-width:14ch;}
-  .hero p.lead{font-size:17px; color:#E6E1D2; max-width:52ch; margin:0 0 30px;}
-  .trust-row{display:flex; flex-wrap:wrap; gap:10px 22px; font-size:14px; color:var(--gold-200);}
-  .trust-row span{display:flex; align-items:center; gap:8px;}
-  .trust-row svg{flex:none;}
+  .hero h1{font-size:clamp(30px,5vw,44px); color:var(--ink); margin-bottom:16px;}
+  .hero h1 em{font-style:normal; color:var(--brand);}
+  .hero p.lead{font-size:16.5px; color:var(--ink-soft); max-width:48ch; margin:0 0 26px;}
+  .trust-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .trust-chip{background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:8px 14px; font-size:13.5px; font-weight:600;}
   .hero-btn{
-    display:inline-block; margin-top:30px; background:var(--gold-500); color:var(--green-900);
-    text-decoration:none; padding:13px 26px; border-radius:999px; font-weight:600; font-size:15px;
+    display:inline-block; margin-top:28px; background:var(--accent); color:var(--ink);
+    text-decoration:none; padding:15px 30px; border-radius:12px; font-weight:700; font-size:16px;
+    box-shadow:0 6px 0 var(--accent-dark);
   }
+  .hero-visual{
+    aspect-ratio:1/1; border-radius:24px; background:linear-gradient(160deg,var(--brand),var(--brand-dark));
+    display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+  }
+  .hero-visual img{width:100%; height:100%; object-fit:cover;}
+  .hero-visual .fallback{color:#fff; text-align:center; padding:20px;}
+  .hero-visual .fallback .big{font-size:54px; margin-bottom:8px;}
 
-  /* SECTION HEADINGS */
-  .section{padding:56px 0;}
-  .section h2{font-size:clamp(24px,3.4vw,30px); margin:0 0 8px;}
-  .section .sub{color:var(--ink-soft); font-size:15px; margin:0 0 34px; max-width:56ch;}
+  .section{padding:60px 0;}
+  .section-head{margin-bottom:32px;}
+  .section-head h2{font-size:clamp(24px,3.2vw,30px); margin-bottom:8px;}
+  .section-head p{color:var(--ink-soft); font-size:15.5px; margin:0; max-width:56ch;}
 
-  /* PRODUCTS */
-  .products{background:var(--paper);}
-  .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
-  @media(max-width:820px){.product-grid{grid-template-columns:1fr;}}
+  .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media(max-width:840px){.product-grid{grid-template-columns:1fr;}}
   .p-card{
-    background:var(--ivory); border:1px solid var(--line); border-radius:var(--radius);
-    padding:26px 22px 22px; display:flex; flex-direction:column;
+    background:var(--paper); border:1px solid var(--line); border-radius:18px; overflow:hidden;
+    display:flex; flex-direction:column; transition:box-shadow .15s, transform .15s;
   }
-  .p-card.featured{border-color:var(--gold-500); box-shadow:0 0 0 1px var(--gold-500) inset;}
-  .p-tag{font-size:13px; color:var(--gold-600); font-weight:600; margin:0 0 6px;}
-  .p-card h3{font-size:22px; margin:0 0 4px;}
-  .p-price{font-size:15px; color:var(--ink-soft); margin:0 0 16px;}
-  .p-price b{font-size:22px; color:var(--ink); font-family:"Tiro Bangla",serif;}
-  .p-includes{list-style:none; margin:0 0 20px; padding:0; font-size:14.5px; color:var(--ink-soft);}
-  .p-includes li{padding:6px 0 6px 22px; position:relative; border-top:1px solid var(--line);}
-  .p-includes li:first-child{border-top:none;}
-  .p-includes li::before{content:"·"; position:absolute; left:6px; color:var(--gold-600); font-size:22px; line-height:1; top:2px;}
+  .p-card.featured{border-color:var(--brand); box-shadow:0 0 0 2px var(--brand);}
+  .p-img{aspect-ratio:4/3; background:var(--brand-light); position:relative;}
+  .p-img img{width:100%; height:100%; object-fit:cover;}
+  .p-img .fallback{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:40px;}
+  .p-tag{position:absolute; top:12px; left:12px; background:var(--accent); color:var(--ink); font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px;}
+  .p-body{padding:20px; display:flex; flex-direction:column; flex:1;}
+  .p-body h3{font-size:20px; margin-bottom:4px;}
+  .p-price{font-size:24px; font-weight:800; color:var(--brand-dark); margin:6px 0 14px; font-family:"Baloo Da 2",sans-serif;}
+  .p-includes{list-style:none; margin:0 0 20px; padding:0; font-size:14.5px; color:var(--ink-soft); flex:1;}
+  .p-includes li{padding:5px 0 5px 22px; position:relative;}
+  .p-includes li::before{content:"✓"; position:absolute; left:0; color:var(--brand); font-weight:700;}
   .p-select{
-    margin-top:auto; width:100%; padding:11px; border-radius:999px; border:1px solid var(--green-700);
-    background:transparent; color:var(--green-700); font-weight:600; font-size:15px; cursor:pointer;
-    font-family:inherit;
+    width:100%; padding:12px; border-radius:10px; border:2px solid var(--ink); background:var(--paper);
+    color:var(--ink); font-weight:700; font-size:15px; cursor:pointer; font-family:inherit;
   }
-  .p-select.active{background:var(--green-700); color:var(--ivory);}
+  .p-select.active{background:var(--ink); color:#fff;}
 
-  /* WHY */
-  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
-  @media(max-width:820px){.why-grid{grid-template-columns:1fr;}}
-  .why-item{border-top:2px solid var(--gold-500); padding-top:14px;}
-  .why-item h3{font-size:18px; margin:0 0 8px;}
-  .why-item p{font-size:14.5px; color:var(--ink-soft); margin:0;}
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media(max-width:800px){.why-grid{grid-template-columns:1fr;}}
+  .why-card{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:22px;}
+  .why-card .ic{font-size:28px; margin-bottom:10px;}
+  .why-card h3{font-size:17.5px; margin-bottom:6px;}
+  .why-card p{font-size:14.5px; color:var(--ink-soft); margin:0;}
 
-  /* ORDER */
-  .order{background:var(--green-900); color:var(--ivory);}
-  .order h2{color:var(--ivory);}
-  .order .sub{color:#CFC9B6;}
-  .order-layout{display:grid; grid-template-columns:1.1fr 1fr; gap:40px; align-items:start;}
+  .order{background:var(--ink);}
+  .order .section-head h2{color:#fff;}
+  .order .section-head p{color:#B8BEC5;}
+  .order-layout{display:grid; grid-template-columns:1.1fr 1fr; gap:32px; align-items:start;}
   @media(max-width:860px){.order-layout{grid-template-columns:1fr;}}
-  .order-summary{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); border-radius:var(--radius); padding:22px;}
-  .order-summary h3{margin:0 0 14px; font-size:17px; color:var(--gold-200); font-family:inherit; font-weight:600;}
-  .sum-row{display:flex; justify-content:space-between; padding:8px 0; font-size:14.5px; border-bottom:1px solid rgba(255,255,255,.1);}
-  .sum-row.total{font-size:17px; font-weight:700; border-bottom:none; padding-top:14px; color:var(--gold-200);}
-  form.order-form{display:grid; gap:14px;}
-  .field label{display:block; font-size:13.5px; color:var(--gold-200); margin:0 0 6px;}
+  .order-summary{background:#1F2328; border-radius:16px; padding:22px; position:sticky; top:80px;}
+  .order-summary h3{color:#fff; font-size:16.5px; margin-bottom:14px;}
+  .sum-row{display:flex; justify-content:space-between; padding:9px 0; font-size:14.5px; color:#C7CCD1; border-bottom:1px solid #33383D;}
+  .sum-row.total{font-size:19px; font-weight:800; color:var(--accent); border-bottom:none; padding-top:16px; font-family:"Baloo Da 2",sans-serif;}
+  form.order-form{display:grid; gap:14px; background:#1F2328; padding:24px; border-radius:16px;}
+  .field label{display:block; font-size:13.5px; color:#B8BEC5; margin-bottom:6px; font-weight:600;}
   .field input, .field textarea, .field select{
-    width:100%; padding:11px 12px; border-radius:var(--radius); border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.06); color:var(--ivory); font-family:inherit; font-size:15px;
+    width:100%; padding:12px 13px; border-radius:10px; border:1px solid #33383D;
+    background:#14171A; color:#fff; font-family:inherit; font-size:15px;
   }
-  .field input::placeholder, .field textarea::placeholder{color:#9FB0A5;}
+  .field input::placeholder, .field textarea::placeholder{color:#6B7278;}
   .area-toggle{display:flex; gap:10px;}
   .area-toggle button{
-    flex:1; padding:11px; border-radius:var(--radius); border:1px solid rgba(255,255,255,.25);
-    background:transparent; color:var(--ivory); font-family:inherit; font-size:14.5px; cursor:pointer;
+    flex:1; padding:12px; border-radius:10px; border:1px solid #33383D;
+    background:#14171A; color:#fff; font-family:inherit; font-size:14.5px; cursor:pointer; font-weight:600;
   }
-  .area-toggle button.active{background:var(--gold-500); color:var(--green-900); border-color:var(--gold-500); font-weight:600;}
-  .qty-row{display:flex; align-items:center; gap:14px;}
+  .area-toggle button.active{background:var(--brand); border-color:var(--brand);}
+  .qty-row{display:flex; align-items:center; gap:16px;}
   .qty-row button{
-    width:36px; height:36px; border-radius:999px; border:1px solid rgba(255,255,255,.3);
-    background:transparent; color:var(--ivory); font-size:18px; cursor:pointer; line-height:1;
+    width:38px; height:38px; border-radius:10px; border:1px solid #33383D;
+    background:#14171A; color:#fff; font-size:18px; cursor:pointer;
   }
   .submit-btn{
-    margin-top:6px; background:var(--gold-500); color:var(--green-900); border:none; padding:14px;
-    border-radius:999px; font-weight:700; font-size:16px; cursor:pointer; font-family:inherit;
+    margin-top:6px; background:var(--accent); color:var(--ink); border:none; padding:15px;
+    border-radius:12px; font-weight:800; font-size:16.5px; cursor:pointer; font-family:"Baloo Da 2",sans-serif;
+    box-shadow:0 5px 0 var(--accent-dark);
   }
-  .submit-btn:disabled{opacity:.6; cursor:default;}
-  .form-msg{font-size:14px; padding:12px 14px; border-radius:var(--radius); margin-top:4px; display:none;}
-  .form-msg.ok{display:block; background:rgba(184,134,59,.2); border:1px solid var(--gold-500); color:var(--gold-200);}
-  .form-msg.err{display:block; background:rgba(162,59,46,.25); border:1px solid var(--danger); color:#F3C9C3;}
+  .submit-btn:disabled{opacity:.6;}
+  .form-msg{font-size:14px; padding:12px 14px; border-radius:10px; margin-top:2px; display:none;}
+  .form-msg.ok{display:block; background:rgba(14,158,109,.2); border:1px solid var(--brand); color:#7CE3BB;}
+  .form-msg.err{display:block; background:rgba(214,69,69,.2); border:1px solid var(--danger); color:#F3A9A4;}
 
-  footer{background:var(--green-900); color:#9FB0A5; text-align:center; padding:26px 0; font-size:13.5px; border-top:1px solid rgba(255,255,255,.1);}
+  footer{background:#0D0F11; color:#8B9198; text-align:center; padding:26px 0; font-size:13.5px;}
 
-  :root:not([data-theme="light"]) body{}
-  @media (prefers-color-scheme: dark){ /* palette already reads well in dark viewers; no override needed */ }
+  .sticky-cta{
+    position:fixed; bottom:0; left:0; right:0; background:var(--paper); border-top:1px solid var(--line);
+    padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); display:none; z-index:30;
+    box-shadow:0 -4px 12px rgba(0,0,0,.06);
+  }
+  @media(max-width:600px){.sticky-cta{display:flex; gap:10px;}}
+  .sticky-cta a{
+    flex:1; text-align:center; background:var(--accent); color:var(--ink); text-decoration:none;
+    padding:12px; border-radius:10px; font-weight:800;
+  }
 </style>
 </head>
 <body>
 
 <header class="site">
   <div class="wrap">
-    <div class="brand">Sinthiya <span>Organic</span></div>
+    <div class="brand">Sinthiya</div>
     <a href="#order" class="header-cta">অর্ডার করুন</a>
   </div>
 </header>
 
 <section class="hero">
-  <div class="wrap">
-    <p class="hero-eyebrow serif">চুলের যত্নে প্রাকৃতিক ফিরে যাওয়ার গল্প</p>
-    <h1>খাঁটি কোল্ড প্রেসড তেল, চুলের গোড়ায় আসল যত্ন</h1>
-    <p class="lead">নারিকেল থেকে কোল্ড প্রেসে বের করা তেল, ভেষজ মিশিয়ে রোদে ইনফিউজড — কোনো কেমিক্যাল ছাড়া, শুধু যা আপনার চুলের দরকার।</p>
-    <div class="trust-row">
-      <span>১০০% কোল্ড প্রেসড, কোনো কেমিক্যাল নেই</span>
-      <span>ক্যাশ অন ডেলিভারি</span>
-      <span>সারা বাংলাদেশে হোম ডেলিভারি</span>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">🌿 ১০০% কোল্ড প্রেসড অর্গানিক</span>
+      <h1>চুলের গোড়ায় <em>আসল</em> যত্ন পৌঁছে দিন</h1>
+      <p class="lead">নারিকেল থেকে কোল্ড প্রেসে বের করা তেল, ভেষজ মিশিয়ে রোদে ইনফিউজড — কোনো কেমিক্যাল ছাড়া।</p>
+      <div class="trust-row">
+        <span class="trust-chip">💵 ক্যাশ অন ডেলিভারি</span>
+        <span class="trust-chip">🚚 সারা বাংলাদেশে ডেলিভারি</span>
+        <span class="trust-chip">✅ মানি ব্যাক গ্যারান্টি</span>
+      </div>
+      <a href="#products" class="hero-btn">কম্বো দেখুন →</a>
     </div>
-    <a href="#products" class="hero-btn">কম্বো দেখুন</a>
+    <div class="hero-visual">
+      <img src="img/hero.jpg" alt="Sinthiya Organic Oil" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="fallback" style="display:flex; flex-direction:column;">
+        <div class="big">🌿</div>
+        <div style="font-weight:700;">img/hero.jpg বসান</div>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="section products" id="products">
+<section class="section" id="products">
   <div class="wrap">
-    <h2>আপনার জন্য কোন কম্বো</h2>
-    <p class="sub">প্রতিটা কম্বো একটা সম্পূর্ণ রুটিন — তেল দিয়ে শুরু, প্রয়োজনমতো হেয়ার প্যাক ও শ্যাম্পু যোগ করা।</p>
+    <div class="section-head">
+      <h2>আপনার জন্য কোন কম্বো</h2>
+      <p>প্রতিটা কম্বো একটা সম্পূর্ণ রুটিন — তেল দিয়ে শুরু, প্রয়োজনমতো হেয়ার প্যাক ও শ্যাম্পু যোগ করা।</p>
+    </div>
     <div class="product-grid" id="productGrid"></div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" style="background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
   <div class="wrap">
-    <h2>কেন Sinthiya</h2>
-    <p class="sub">বাজারের বেশিরভাগ তেল হাই-হিটে বানানো হয়, যাতে পুষ্টির একটা বড় অংশ নষ্ট হয়ে যায়।</p>
+    <div class="section-head">
+      <h2>কেন Sinthiya</h2>
+      <p>বাজারের বেশিরভাগ তেল হাই-হিটে বানানো হয়, যাতে পুষ্টির একটা বড় অংশ নষ্ট হয়ে যায়।</p>
+    </div>
     <div class="why-grid">
-      <div class="why-item">
-        <h3>কোল্ড প্রেসড প্রসেস</h3>
-        <p>কোনো হিট ছাড়াই নারিকেল থেকে তেল বের করা হয়, তাই পুষ্টি অক্ষত থাকে।</p>
-      </div>
-      <div class="why-item">
-        <h3>রোদে ভেষজ ইনফিউজড</h3>
-        <p>ঐতিহ্যবাহী পদ্ধতিতে ভেষজ মিশিয়ে রোদে রেখে তৈরি, কোনো শর্টকাট নেই।</p>
-      </div>
-      <div class="why-item">
-        <h3>ঝুঁকিহীন অর্ডার</h3>
-        <p>আগে টাকা লাগে না — প্রোডাক্ট হাতে পেয়ে দাম দিন।</p>
-      </div>
+      <div class="why-card"><div class="ic">🥥</div><h3>কোল্ড প্রেসড প্রসেস</h3><p>কোনো হিট ছাড়াই নারিকেল থেকে তেল বের করা হয়, তাই পুষ্টি অক্ষত থাকে।</p></div>
+      <div class="why-card"><div class="ic">☀️</div><h3>রোদে ভেষজ ইনফিউজড</h3><p>ঐতিহ্যবাহী পদ্ধতিতে ভেষজ মিশিয়ে রোদে রেখে তৈরি, কোনো শর্টকাট নেই।</p></div>
+      <div class="why-card"><div class="ic">🛡️</div><h3>ঝুঁকিহীন অর্ডার</h3><p>আগে টাকা লাগে না — প্রোডাক্ট হাতে পেয়ে দাম দিন।</p></div>
     </div>
   </div>
 </section>
 
 <section class="section order" id="order">
   <div class="wrap">
-    <h2>অর্ডার করুন</h2>
-    <p class="sub">নিচের ফর্মটি পূরণ করুন — আমরা শীঘ্রই কল করে অর্ডার নিশ্চিত করব।</p>
+    <div class="section-head">
+      <h2>অর্ডার করুন</h2>
+      <p>নিচের ফর্মটি পূরণ করুন — আমরা শীঘ্রই কল করে অর্ডার নিশ্চিত করব।</p>
+    </div>
     <div class="order-layout">
       <form class="order-form" id="orderForm">
         <div class="field">
@@ -204,22 +219,13 @@
           <label>পরিমাণ</label>
           <div class="qty-row">
             <button type="button" id="qtyMinus">−</button>
-            <span id="qtyVal" style="min-width:20px;text-align:center;">1</span>
+            <span id="qtyVal" style="min-width:20px;text-align:center;color:#fff;">1</span>
             <button type="button" id="qtyPlus">+</button>
           </div>
         </div>
-        <div class="field">
-          <label>আপনার নাম</label>
-          <input type="text" id="custName" placeholder="পূর্ণ নাম" required>
-        </div>
-        <div class="field">
-          <label>মোবাইল নাম্বার</label>
-          <input type="tel" id="custPhone" placeholder="01XXXXXXXXX" required>
-        </div>
-        <div class="field">
-          <label>সম্পূর্ণ ঠিকানা</label>
-          <textarea id="custAddress" rows="2" placeholder="বাসা/রোড/থানা/জেলা" required></textarea>
-        </div>
+        <div class="field"><label>আপনার নাম</label><input type="text" id="custName" placeholder="পূর্ণ নাম" required></div>
+        <div class="field"><label>মোবাইল নাম্বার</label><input type="tel" id="custPhone" placeholder="01XXXXXXXXX" required></div>
+        <div class="field"><label>সম্পূর্ণ ঠিকানা</label><textarea id="custAddress" rows="2" placeholder="বাসা/রোড/থানা/জেলা" required></textarea></div>
         <div class="field">
           <label>এলাকা</label>
           <div class="area-toggle">
@@ -230,7 +236,6 @@
         <button type="submit" class="submit-btn" id="submitBtn">অর্ডার নিশ্চিত করুন</button>
         <div class="form-msg" id="formMsg"></div>
       </form>
-
       <div class="order-summary">
         <h3>অর্ডার সামারি</h3>
         <div class="sum-row"><span id="sumProduct">—</span><span id="sumProductPrice">৳0</span></div>
@@ -243,49 +248,54 @@
 
 <footer>© 2026 Sinthiya Organic Oil · সারা বাংলাদেশে ক্যাশ অন ডেলিভারি</footer>
 
+<div class="sticky-cta"><a href="#order">এখনই অর্ডার করুন — ৳500 থেকে শুরু</a></div>
+
 <script>
+/* ===== Facebook Pixel — replace YOUR_PIXEL_ID once you have it (Events Manager > Data Sources) ===== */
+/*
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','YOUR_PIXEL_ID'); fbq('track','PageView');
+*/
+
 const FN_BASE = "https://jlussgczauobxfdigcpf.supabase.co/functions/v1";
 
 const PRODUCTS = [
-  { id: null, key: "500", name: "কম্বো ৳৫০০", price: 500, tag: "শুরুর জন্য সেরা",
-    includes: ["১০০মিলি কোল্ড প্রেসড তেল", "১০০গ্রাম হেয়ার প্যাক"] },
-  { id: null, key: "600", name: "কম্বো ৳৬০০", price: 600, tag: "সবচেয়ে জনপ্রিয়", featured: true,
-    includes: ["১০০মিলি কোল্ড প্রেসড তেল", "১০০গ্রাম হেয়ার প্যাক", "১০০মিলি অর্গানিক শ্যাম্পু"] },
-  { id: null, key: "1000", name: "কম্বো ৳১০০০", price: 1000, tag: "সম্পূর্ণ রুটিন",
-    includes: ["২০০মিলি কোল্ড প্রেসড তেল", "২০০গ্রাম হেয়ার প্যাক", "১০০মিলি অর্গানিক শ্যাম্পু"] },
+  { key:"500", name:"কম্বো ৳৫০০", price:500, tag:"শুরুর জন্য সেরা", icon:"🧴",
+    includes:["১০০মিলি কোল্ড প্রেসড তেল","১০০গ্রাম হেয়ার প্যাক"] },
+  { key:"600", name:"কম্বো ৳৬০০", price:600, tag:"সবচেয়ে জনপ্রিয়", featured:true, icon:"🧴",
+    includes:["১০০মিলি কোল্ড প্রেসড তেল","১০০গ্রাম হেয়ার প্যাক","১০০মিলি অর্গানিক শ্যাম্পু"] },
+  { key:"1000", name:"কম্বো ৳১০০০", price:1000, tag:"সম্পূর্ণ রুটিন", icon:"🧴",
+    includes:["২০০মিলি কোল্ড প্রেসড তেল","২০০গ্রাম হেয়ার প্যাক","১০০মিলি অর্গানিক শ্যাম্পু"] },
 ];
-
-// NOTE: product_id (uuid) must be filled in from the products table (see admin.html console on first load,
-// or query Supabase) — placeholders below are replaced at deploy time.
 const PRODUCT_IDS = {
-  "500": "5f0ba5fd-124a-41c1-aa0f-51aaacf83637",
-  "600": "784ec7b9-6adb-4639-99d5-1297337aa413",
-  "1000": "ee449f81-c521-4c2c-8f9b-5f71f0c614b5",
+  "500":"5f0ba5fd-124a-41c1-aa0f-51aaacf83637",
+  "600":"784ec7b9-6adb-4639-99d5-1297337aa413",
+  "1000":"ee449f81-c521-4c2c-8f9b-5f71f0c614b5",
 };
 
-let selectedKey = "600";
-let qty = 1;
-let area = "dhaka";
+let selectedKey = "600", qty = 1, area = "dhaka";
 
 function renderProducts(){
-  const grid = document.getElementById("productGrid");
-  grid.innerHTML = "";
-  const select = document.getElementById("productSelect");
-  select.innerHTML = "";
+  const grid = document.getElementById("productGrid"); grid.innerHTML = "";
+  const select = document.getElementById("productSelect"); select.innerHTML = "";
   PRODUCTS.forEach(p=>{
     const card = document.createElement("div");
     card.className = "p-card" + (p.featured ? " featured" : "");
     card.innerHTML = `
-      <p class="p-tag">${p.tag}</p>
-      <h3>${p.name}</h3>
-      <p class="p-price"><b>৳${p.price}</b> / কম্বো</p>
-      <ul class="p-includes">${p.includes.map(i=>`<li>${i}</li>`).join("")}</ul>
-      <button class="p-select ${p.key===selectedKey?'active':''}" data-key="${p.key}">এটা বেছে নিন</button>
-    `;
+      <div class="p-img">
+        <span class="p-tag">${p.tag}</span>
+        <img src="img/combo-${p.key}.jpg" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="fallback" style="display:flex;">${p.icon}</div>
+      </div>
+      <div class="p-body">
+        <h3>${p.name}</h3>
+        <div class="p-price">৳${p.price}</div>
+        <ul class="p-includes">${p.includes.map(i=>`<li>${i}</li>`).join("")}</ul>
+        <button class="p-select ${p.key===selectedKey?'active':''}" data-key="${p.key}">এটা বেছে নিন</button>
+      </div>`;
     grid.appendChild(card);
     const opt = document.createElement("option");
-    opt.value = p.key; opt.textContent = `${p.name} — ৳${p.price}`;
-    select.appendChild(opt);
+    opt.value = p.key; opt.textContent = `${p.name} — ৳${p.price}`; select.appendChild(opt);
   });
   select.value = selectedKey;
   grid.querySelectorAll(".p-select").forEach(btn=>{
@@ -316,51 +326,33 @@ document.querySelectorAll(".area-btn").forEach(btn=>{
 
 document.getElementById("orderForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
-  const msg = document.getElementById("formMsg");
-  const btn = document.getElementById("submitBtn");
+  const msg = document.getElementById("formMsg"); const btn = document.getElementById("submitBtn");
   msg.className = "form-msg"; msg.textContent = "";
-
   const name = document.getElementById("custName").value.trim();
   const phone = document.getElementById("custPhone").value.trim();
   const address = document.getElementById("custAddress").value.trim();
   const productId = PRODUCT_IDS[selectedKey];
-
-  if(!name || !phone || !address){
-    msg.className = "form-msg err"; msg.textContent = "সব ঘর পূরণ করুন।"; return;
-  }
-  if(productId.startsWith("REPLACE_")){
-    msg.className = "form-msg err"; msg.textContent = "সেটআপ অসম্পূর্ণ — প্রোডাক্ট আইডি বসানো হয়নি।"; return;
-  }
-
+  if(!name || !phone || !address){ msg.className = "form-msg err"; msg.textContent = "সব ঘর পূরণ করুন।"; return; }
   btn.disabled = true; btn.textContent = "পাঠানো হচ্ছে...";
   try{
     const res = await fetch(`${FN_BASE}/create-order`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customer_name: name, phone, address, area,
-        items: [{ product_id: productId, quantity: qty }],
-      }),
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ customer_name:name, phone, address, area, items:[{product_id:productId, quantity:qty}] }),
     });
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || "অর্ডার ব্যর্থ হয়েছে");
+    /* fbq('track','Lead'); // pixel event once ID added */
     msg.className = "form-msg ok";
     msg.textContent = `অর্ডার সফল হয়েছে! অর্ডার নাম্বার: ${data.order_number} — মোট ৳${data.total}। আমরা শীঘ্রই কল করব।`;
-    document.getElementById("orderForm").reset();
-    qty = 1; area = "dhaka";
+    document.getElementById("orderForm").reset(); qty = 1; area = "dhaka";
     document.querySelectorAll(".area-btn").forEach(b=>b.classList.remove("active"));
     document.querySelector('.area-btn[data-area="dhaka"]').classList.add("active");
     updateSummary();
-  }catch(err){
-    msg.className = "form-msg err";
-    msg.textContent = "কিছু ভুল হয়েছে: " + err.message;
-  }finally{
-    btn.disabled = false; btn.textContent = "অর্ডার নিশ্চিত করুন";
-  }
+  }catch(err){ msg.className = "form-msg err"; msg.textContent = "কিছু ভুল হয়েছে: " + err.message; }
+  finally{ btn.disabled = false; btn.textContent = "অর্ডার নিশ্চিত করুন"; }
 });
 
-renderProducts();
-updateSummary();
+renderProducts(); updateSummary();
 </script>
 </body>
 </html>

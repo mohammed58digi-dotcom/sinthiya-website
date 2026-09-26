@@ -84,8 +84,10 @@
       <button data-f="confirmed">কনফার্মড</button>
       <button data-f="cancelled">বাতিল</button>
       <button data-f="all">সব</button>
+      <button data-f="images" style="margin-left:auto;">প্রোডাক্ট ছবি</button>
     </div>
     <div id="orderList"></div>
+    <div id="imagePanel" style="display:none;"></div>
   </div>
 </div>
 
@@ -188,8 +190,68 @@ document.getElementById("filterRow").addEventListener("click", e=>{
   document.querySelectorAll("#filterRow button").forEach(b=>b.classList.remove("active"));
   e.target.classList.add("active");
   filter = e.target.dataset.f;
-  render();
+  const orderList = document.getElementById("orderList");
+  const imagePanel = document.getElementById("imagePanel");
+  if(filter === "images"){
+    orderList.style.display = "none"; imagePanel.style.display = "block";
+    loadImagePanel();
+  }else{
+    orderList.style.display = "block"; imagePanel.style.display = "none";
+    render();
+  }
 });
+
+const SUPABASE_URL = "https://jlussgczauobxfdigcpf.supabase.co";
+const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdXNzZ2N6YXVvYnhmZGlnY3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODgwOTgsImV4cCI6MjEwNTY2NDA5OH0.9VedHmJeRP44Q0WcpAmXRzNgod473Oslk3oVrZpllzQ";
+
+async function loadImagePanel(){
+  const panel = document.getElementById("imagePanel");
+  panel.innerHTML = '<div class="empty">লোড হচ্ছে...</div>';
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&order=sort_order.asc`, {
+    headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` },
+  });
+  const products = await res.json();
+  panel.innerHTML = products.map(p => `
+    <div class="order-card" id="imgcard-${p.id}">
+      <div class="order-top"><span class="num">${p.name}</span></div>
+      <div style="margin:12px 0;">
+        ${p.image_url ? `<img src="${p.image_url}" style="width:100%;max-width:260px;border-radius:8px;display:block;">` : `<div style="color:var(--ink-soft);font-size:14px;">এখনো কোনো ছবি নেই</div>`}
+      </div>
+      <input type="file" accept="image/*" id="file-${p.id}" style="margin-bottom:10px;display:block;">
+      <button class="btn-confirm" style="width:100%;" onclick="uploadImage('${p.id}')">ছবি আপলোড করুন</button>
+      <div id="status-${p.id}" style="font-size:13px;color:var(--ink-soft);margin-top:8px;"></div>
+    </div>
+  `).join("");
+}
+
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadImage(productId){
+  const input = document.getElementById(`file-${productId}`);
+  const status = document.getElementById(`status-${productId}`);
+  const file = input.files[0];
+  if(!file){ status.textContent = "প্রথমে একটা ছবি বেছে নিন।"; return; }
+  status.textContent = "আপলোড হচ্ছে...";
+  try{
+    const base64 = await fileToBase64(file);
+    const res = await fetch(`${FN_BASE}/upload-image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": PASSWORD },
+      body: JSON.stringify({ product_id: productId, filename: file.name, image_base64: base64 }),
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "ব্যর্থ হয়েছে");
+    status.textContent = "সফল হয়েছে ✓";
+    loadImagePanel();
+  }catch(err){ status.textContent = "এরর: " + err.message; }
+}
 
 // auto-login if password already in this session
 const savedPw = sessionStorage.getItem("sinthiya_admin_pw");

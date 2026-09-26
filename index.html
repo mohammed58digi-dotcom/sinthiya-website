@@ -258,22 +258,31 @@ fbq('init','YOUR_PIXEL_ID'); fbq('track','PageView');
 */
 
 const FN_BASE = "https://jlussgczauobxfdigcpf.supabase.co/functions/v1";
+const SUPABASE_URL = "https://jlussgczauobxfdigcpf.supabase.co";
+const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdXNzZ2N6YXVvYnhmZGlnY3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODgwOTgsImV4cCI6MjEwNTY2NDA5OH0.9VedHmJeRP44Q0WcpAmXRzNgod473Oslk3oVrZpllzQ";
 
-const PRODUCTS = [
-  { key:"500", name:"কম্বো ৳৫০০", price:500, tag:"শুরুর জন্য সেরা", icon:"🧴",
-    includes:["১০০মিলি কোল্ড প্রেসড তেল","১০০গ্রাম হেয়ার প্যাক"] },
-  { key:"600", name:"কম্বো ৳৬০০", price:600, tag:"সবচেয়ে জনপ্রিয়", featured:true, icon:"🧴",
-    includes:["১০০মিলি কোল্ড প্রেসড তেল","১০০গ্রাম হেয়ার প্যাক","১০০মিলি অর্গানিক শ্যাম্পু"] },
-  { key:"1000", name:"কম্বো ৳১০০০", price:1000, tag:"সম্পূর্ণ রুটিন", icon:"🧴",
-    includes:["২০০মিলি কোল্ড প্রেসড তেল","২০০গ্রাম হেয়ার প্যাক","১০০মিলি অর্গানিক শ্যাম্পু"] },
-];
-const PRODUCT_IDS = {
-  "500":"5f0ba5fd-124a-41c1-aa0f-51aaacf83637",
-  "600":"784ec7b9-6adb-4639-99d5-1297337aa413",
-  "1000":"ee449f81-c521-4c2c-8f9b-5f71f0c614b5",
-};
+let PRODUCTS = [];
+let selectedKey = null, qty = 1, area = "dhaka";
 
-let selectedKey = "600", qty = 1, area = "dhaka";
+async function loadProducts(){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&active=eq.true&order=sort_order.asc`, {
+    headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` },
+  });
+  const rows = await res.json();
+  const tags = { 500:"শুরুর জন্য সেরা", 600:"সবচেয়ে জনপ্রিয়", 1000:"সম্পূর্ণ রুটিন" };
+  PRODUCTS = rows.map(r=>({
+    key: r.price.toString(), id: r.id, name: r.name, price: r.price,
+    tag: tags[r.price] || "", featured: r.price === 600,
+    image_url: r.image_url,
+    includes: [
+      r.oil_ml ? `${r.oil_ml}মিলি কোল্ড প্রেসড তেল` : null,
+      r.hairpack_g ? `${r.hairpack_g}গ্রাম হেয়ার প্যাক` : null,
+      r.shampoo_ml ? `${r.shampoo_ml}মিলি অর্গানিক শ্যাম্পু` : null,
+    ].filter(Boolean),
+  }));
+  selectedKey = PRODUCTS.find(p=>p.featured)?.key || PRODUCTS[0]?.key;
+  renderProducts(); updateSummary();
+}
 
 function renderProducts(){
   const grid = document.getElementById("productGrid"); grid.innerHTML = "";
@@ -281,11 +290,14 @@ function renderProducts(){
   PRODUCTS.forEach(p=>{
     const card = document.createElement("div");
     card.className = "p-card" + (p.featured ? " featured" : "");
+    const imgTag = p.image_url
+      ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+      : "";
     card.innerHTML = `
       <div class="p-img">
         <span class="p-tag">${p.tag}</span>
-        <img src="img/combo-${p.key}.jpg" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="fallback" style="display:flex;">${p.icon}</div>
+        ${imgTag}
+        <div class="fallback" style="display:${p.image_url?'none':'flex'};">🧴</div>
       </div>
       <div class="p-body">
         <h3>${p.name}</h3>
@@ -305,6 +317,7 @@ function renderProducts(){
 
 function updateSummary(){
   const p = PRODUCTS.find(x=>x.key===selectedKey);
+  if(!p) return;
   document.getElementById("productSelect").value = selectedKey;
   document.getElementById("sumProduct").textContent = `${p.name} × ${qty}`;
   document.getElementById("sumProductPrice").textContent = `৳${p.price*qty}`;
@@ -331,7 +344,7 @@ document.getElementById("orderForm").addEventListener("submit", async (e)=>{
   const name = document.getElementById("custName").value.trim();
   const phone = document.getElementById("custPhone").value.trim();
   const address = document.getElementById("custAddress").value.trim();
-  const productId = PRODUCT_IDS[selectedKey];
+  const productId = PRODUCTS.find(p=>p.key===selectedKey)?.id;
   if(!name || !phone || !address){ msg.className = "form-msg err"; msg.textContent = "সব ঘর পূরণ করুন।"; return; }
   btn.disabled = true; btn.textContent = "পাঠানো হচ্ছে...";
   try{
@@ -352,7 +365,7 @@ document.getElementById("orderForm").addEventListener("submit", async (e)=>{
   finally{ btn.disabled = false; btn.textContent = "অর্ডার নিশ্চিত করুন"; }
 });
 
-renderProducts(); updateSummary();
+loadProducts();
 </script>
 </body>
 </html>

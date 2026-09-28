@@ -145,6 +145,13 @@
     flex:1; text-align:center; background:var(--accent); color:var(--ink); text-decoration:none;
     padding:12px; border-radius:10px; font-weight:800;
   }
+
+  .reviews{background:var(--paper); padding:34px 0; border-bottom:1px solid var(--line); display:none;}
+  .rev-track{display:flex; gap:14px; overflow-x:auto; scrollbar-width:none; padding:4px 20px;}
+  .rev-track::-webkit-scrollbar{display:none;}
+  .rev-card{flex:0 0 260px; background:var(--paper); background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px;}
+  .rev-card img{width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px;}
+  .rev-card .stars{color:var(--accent); font-size:14px;} .rev-card p{font-size:14px; margin:6px 0; color:var(--ink);} .rev-card b{font-size:13.5px;}
 </style>
 </head>
 <body>
@@ -170,7 +177,7 @@
       <a href="#products" class="hero-btn">কম্বো দেখুন →</a>
     </div>
     <div class="hero-visual">
-      <img src="img/hero.jpg" alt="Sinthiya Organic Oil" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img id="heroImg" src="img/hero.jpg" alt="Sinthiya Organic Oil" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="fallback" style="display:flex; flex-direction:column;">
         <div class="big">🌿</div>
         <div style="font-weight:700;">img/hero.jpg বসান</div>
@@ -178,6 +185,8 @@
     </div>
   </div>
 </section>
+
+<section class="reviews" id="reviewsSec"><div class="rev-track" id="revTrack"></div></section>
 
 <section class="section" id="products">
   <div class="wrap">
@@ -226,13 +235,8 @@
         <div class="field"><label>আপনার নাম</label><input type="text" id="custName" placeholder="পূর্ণ নাম" required></div>
         <div class="field"><label>মোবাইল নাম্বার</label><input type="tel" id="custPhone" placeholder="01XXXXXXXXX" required></div>
         <div class="field"><label>সম্পূর্ণ ঠিকানা</label><textarea id="custAddress" rows="2" placeholder="বাসা/রোড/থানা/জেলা" required></textarea></div>
-        <div class="field">
-          <label>এলাকা</label>
-          <div class="area-toggle">
-            <button type="button" class="area-btn active" data-area="dhaka">ঢাকার মধ্যে (৳৮০)</button>
-            <button type="button" class="area-btn" data-area="outside">ঢাকার বাইরে (৳১৩০)</button>
-          </div>
-        </div>
+        <div class="field"><label>জেলা</label><select id="custDistrict" required><option value="">জেলা বেছে নিন</option></select></div>
+        <div class="field"><label>থানা / উপজেলা</label><input type="text" id="custThana" placeholder="থানা বা উপজেলার নাম" required></div>
         <button type="submit" class="submit-btn" id="submitBtn">অর্ডার নিশ্চিত করুন</button>
         <div class="form-msg" id="formMsg"></div>
       </form>
@@ -248,7 +252,7 @@
 
 <footer>© 2026 Sinthiya Organic Oil · সারা বাংলাদেশে ক্যাশ অন ডেলিভারি</footer>
 
-<div class="sticky-cta"><a href="#order">এখনই অর্ডার করুন — ৳500 থেকে শুরু</a></div>
+<div class="sticky-cta"><a href="#order" id="stickyLink">এখনই অর্ডার করুন</a></div>
 
 <script>
 /* ===== Facebook Pixel — replace YOUR_PIXEL_ID once you have it (Events Manager > Data Sources) ===== */
@@ -262,7 +266,10 @@ const SUPABASE_URL = "https://jlussgczauobxfdigcpf.supabase.co";
 const ANON_KEY = "sb_publishable_7DjL6HMbAKC2BSe518DNbg_sD1KEMgI";
 
 let PRODUCTS = [];
-let selectedKey = null, qty = 1, area = "dhaka";
+let selectedKey = null, qty = 1, district = "", userPicked = false;
+const DIST = "ঢাকা,গাজীপুর,নারায়ণগঞ্জ,নরসিংদী,মানিকগঞ্জ,মুন্সীগঞ্জ,টাঙ্গাইল,কিশোরগঞ্জ,ফরিদপুর,গোপালগঞ্জ,মাদারীপুর,রাজবাড়ী,শরীয়তপুর,চট্টগ্রাম,কক্সবাজার,কুমিল্লা,ফেনী,ব্রাহ্মণবাড়িয়া,চাঁদপুর,লক্ষ্মীপুর,নোয়াখালী,খাগড়াছড়ি,রাঙ্গামাটি,বান্দরবান,সিলেট,মৌলভীবাজার,হবিগঞ্জ,সুনামগঞ্জ,বরিশাল,ভোলা,পটুয়াখালী,পিরোজপুর,ঝালকাঠি,বরগুনা,খুলনা,বাগেরহাট,সাতক্ষীরা,যশোর,ঝিনাইদহ,মাগুরা,নড়াইল,কুষ্টিয়া,চুয়াডাঙ্গা,মেহেরপুর,রাজশাহী,নাটোর,নওগাঁ,চাঁপাইনবাবগঞ্জ,পাবনা,সিরাজগঞ্জ,বগুড়া,জয়পুরহাট,রংপুর,গাইবান্ধা,কুড়িগ্রাম,লালমনিরহাট,নীলফামারী,দিনাজপুর,পঞ্চগড়,ঠাকুরগাঁও,ময়মনসিংহ,জামালপুর,শেরপুর,নেত্রকোণা".split(",");
+const DHAKA_ZONE = ["ঢাকা","গাজীপুর","নারায়ণগঞ্জ"];
+const delivery = ()=> !district ? 0 : (DHAKA_ZONE.includes(district) ? 80 : 130);
 
 async function loadProducts(){
   const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&active=eq.true&order=sort_order.asc`, {
@@ -311,7 +318,7 @@ function renderProducts(){
   });
   select.value = selectedKey;
   grid.querySelectorAll(".p-select").forEach(btn=>{
-    btn.addEventListener("click", ()=>{ selectedKey = btn.dataset.key; renderProducts(); updateSummary(); });
+    btn.addEventListener("click", ()=>{ selectedKey = btn.dataset.key; userPicked = true; renderProducts(); updateSummary(); document.getElementById("order").scrollIntoView({behavior:"smooth"}); });
   });
 }
 
@@ -321,21 +328,19 @@ function updateSummary(){
   document.getElementById("productSelect").value = selectedKey;
   document.getElementById("sumProduct").textContent = `${p.name} × ${qty}`;
   document.getElementById("sumProductPrice").textContent = `৳${p.price*qty}`;
-  const delivery = area === "dhaka" ? 80 : 130;
-  document.getElementById("sumDelivery").textContent = `৳${delivery}`;
-  document.getElementById("sumTotal").textContent = `৳${p.price*qty + delivery}`;
+  const d = delivery();
+  document.getElementById("sumDelivery").textContent = district ? `৳${d}` : "জেলা বেছে নিন";
+  document.getElementById("sumTotal").textContent = `৳${p.price*qty + d}`;
+  if(userPicked) document.getElementById("stickyLink").textContent = `অর্ডার নিশ্চিত করুন — ৳${p.price*qty + d}`;
   document.getElementById("qtyVal").textContent = qty;
 }
 
 document.getElementById("productSelect").addEventListener("change", e=>{ selectedKey = e.target.value; renderProducts(); updateSummary(); });
 document.getElementById("qtyMinus").addEventListener("click", ()=>{ qty = Math.max(1, qty-1); updateSummary(); });
 document.getElementById("qtyPlus").addEventListener("click", ()=>{ qty = Math.min(20, qty+1); updateSummary(); });
-document.querySelectorAll(".area-btn").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    document.querySelectorAll(".area-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active"); area = btn.dataset.area; updateSummary();
-  });
-});
+const dSel = document.getElementById("custDistrict");
+DIST.forEach(x=>{ const o=document.createElement("option"); o.value=o.textContent=x; dSel.appendChild(o); });
+dSel.addEventListener("change", e=>{ district = e.target.value; updateSummary(); });
 
 document.getElementById("orderForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
@@ -345,27 +350,40 @@ document.getElementById("orderForm").addEventListener("submit", async (e)=>{
   const phone = document.getElementById("custPhone").value.trim();
   const address = document.getElementById("custAddress").value.trim();
   const productId = PRODUCTS.find(p=>p.key===selectedKey)?.id;
-  if(!name || !phone || !address){ msg.className = "form-msg err"; msg.textContent = "সব ঘর পূরণ করুন।"; return; }
+  if(!name || !phone || !address || !district){ msg.className = "form-msg err"; msg.textContent = "সব ঘর পূরণ করুন।"; return; }
   btn.disabled = true; btn.textContent = "পাঠানো হচ্ছে...";
   try{
     const res = await fetch(`${FN_BASE}/create-order`, {
       method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ customer_name:name, phone, address, area, items:[{product_id:productId, quantity:qty}] }),
+      body: JSON.stringify({ customer_name:name, phone, address, district, thana:document.getElementById("custThana").value.trim(), items:[{product_id:productId, quantity:qty}] }),
     });
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || "অর্ডার ব্যর্থ হয়েছে");
     /* fbq('track','Lead'); // pixel event once ID added */
     msg.className = "form-msg ok";
     msg.textContent = `অর্ডার সফল হয়েছে! অর্ডার নাম্বার: ${data.order_number} — মোট ৳${data.total}। আমরা শীঘ্রই কল করব।`;
-    document.getElementById("orderForm").reset(); qty = 1; area = "dhaka";
-    document.querySelectorAll(".area-btn").forEach(b=>b.classList.remove("active"));
-    document.querySelector('.area-btn[data-area="dhaka"]').classList.add("active");
+    document.getElementById("orderForm").reset(); qty = 1; district = "";
     updateSummary();
   }catch(err){ msg.className = "form-msg err"; msg.textContent = "কিছু ভুল হয়েছে: " + err.message; }
   finally{ btn.disabled = false; btn.textContent = "অর্ডার নিশ্চিত করুন"; }
 });
 
-loadProducts();
+async function loadExtras(){
+  const H = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
+  try{
+    const s = await (await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.hero_image_url&select=value`, {headers:H})).json();
+    if(s[0]?.value){ const im=document.getElementById("heroImg"); im.src=s[0].value; im.style.display="block"; if(im.nextElementSibling) im.nextElementSibling.style.display="none"; }
+    const r = await (await fetch(`${SUPABASE_URL}/rest/v1/reviews?select=*&active=eq.true&order=created_at.desc`, {headers:H})).json();
+    if(!r.length) return;
+    const card = x=>`<div class="rev-card">${x.image_url?`<img src="${x.image_url}" alt="">`:""}<div class="stars">${"★".repeat(x.rating||5)}</div>${x.review_text?`<p>${x.review_text}</p>`:""}<b>${x.customer_name}</b></div>`;
+    const track = document.getElementById("revTrack");
+    track.innerHTML = r.map(card).join("") + r.map(card).join("");
+    document.getElementById("reviewsSec").style.display = "block";
+    let paused=false; track.addEventListener("touchstart",()=>paused=true); track.addEventListener("touchend",()=>setTimeout(()=>paused=false,2500)); track.addEventListener("mouseenter",()=>paused=true); track.addEventListener("mouseleave",()=>paused=false);
+    setInterval(()=>{ if(paused) return; track.scrollLeft += 1; if(track.scrollLeft >= track.scrollWidth/2) track.scrollLeft = 0; }, 25);
+  }catch(e){ console.error(e); }
+}
+loadProducts(); loadExtras();
 </script>
 </body>
 </html>

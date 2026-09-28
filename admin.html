@@ -23,7 +23,9 @@ button{font:inherit;cursor:pointer}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
 .row{display:flex;gap:10px;flex-wrap:wrap} .row>*{flex:1;min-width:120px}
 .badge{font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700;background:#F3E4C4;color:#9A6A10}
-.badge.confirmed{background:#D9EBDF;color:var(--dark)} .badge.cancelled{background:#F3D6D1;color:var(--danger)}
+.badge.confirmed{background:#DCE8F7;color:#245A9E} .badge.delivered{background:#D9EBDF;color:var(--dark)} .badge.partial{background:#F3E4C4;color:#9A6A10}
+.badge.cancelled,.badge.returned{background:#F3D6D1;color:var(--danger)}
+.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{font-size:20px;display:block}.stat span{font-size:12.5px;color:var(--soft)}
 .muted{color:var(--soft);font-size:13.5px} .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;display:none;z-index:9}
 img.pv{width:100%;max-width:200px;border-radius:8px;display:block;margin-top:8px}
 </style>
@@ -85,23 +87,45 @@ $("tabs").onclick = e => {
 };
 
 /* ---------- ORDERS ---------- */
-const stLabel = {pending:"পেন্ডিং",confirmed:"কনফার্মড",cancelled:"বাতিল"};
+const stLabel = {pending:"পেন্ডিং",confirmed:"কুরিয়ারে",delivered:"ডেলিভারড",partial:"আংশিক",returned:"রিটার্ন",cancelled:"বাতিল"};
+const csLabel = {pending:"পেন্ডিং",in_review:"রিভিউতে",hold:"হোল্ড",delivered:"ডেলিভারড",delivered_approval_pending:"ডেলিভারড (অনুমোদন বাকি)",partial_delivered:"আংশিক ডেলিভারড",partial_delivered_approval_pending:"আংশিক (অনুমোদন বাকি)",cancelled:"ক্যান্সেল",cancelled_approval_pending:"ক্যান্সেল (অনুমোদন বাকি)",unknown:"অজানা",unknown_approval_pending:"অজানা"};
+function monthStats(){
+  const n = new Date(), mo = ORDERS.filter(o => { const d = new Date(o.created_at); return d.getMonth()===n.getMonth() && d.getFullYear()===n.getFullYear(); });
+  const del = mo.filter(o => o.status === "delivered");
+  const sales = del.reduce((s,o) => s + o.subtotal, 0);
+  const cost = del.reduce((s,o) => s + (o.order_items||[]).reduce((a,i) => a + i.unit_cost*i.quantity, 0), 0);
+  return { sent: mo.filter(o => ["confirmed","delivered","partial","returned"].includes(o.status)).length, transit: mo.filter(o => o.status==="confirmed").length, del: del.length, ret: mo.filter(o => o.status==="returned").length, sales, profit: sales - cost };
+}
 function renderOrders(){
+  const s = monthStats();
   const list = ORDERS.filter(o => ofilter === "all" || o.status === ofilter);
-  $("orders").innerHTML = `<div class="row" style="margin-bottom:12px">${["pending","confirmed","cancelled","all"].map(f=>`<button class="btn ${f===ofilter?"":"ghost"}" onclick="ofilter='${f}';renderOrders()">${stLabel[f]||"সব"}</button>`).join("")}</div>` +
+  $("orders").innerHTML =
+  `<div class="muted" style="margin-bottom:6px">এই মাসের হিসাব (শুধু ডেলিভারড অর্ডারের পণ্যমূল্য — ডেলিভারি চার্জ বাদে)</div>
+   <div class="row" style="margin-bottom:12px">
+     <div class="stat"><b>৳${s.sales}</b><span>বিক্রয়</span></div><div class="stat"><b>৳${s.profit}</b><span>লাভ (কেনা দাম বাদে)</span></div>
+     <div class="stat"><b>${s.del}</b><span>ডেলিভারড</span></div><div class="stat"><b>${s.transit}</b><span>পথে আছে</span></div><div class="stat"><b>${s.ret}</b><span>রিটার্ন</span></div></div>
+   <div class="row" style="margin-bottom:12px"><button class="btn ghost" onclick="syncNow(this)">🔄 SteadFast থেকে স্ট্যাটাস আপডেট</button></div>
+   <div class="tabs">${["pending","confirmed","delivered","returned","cancelled","all"].map(f => `<button class="${f===ofilter?"on":""}" onclick="ofilter='${f}';renderOrders()">${stLabel[f]||"সব"}</button>`).join("")}</div>` +
   (list.length ? list.map(o => `<div class="card">
     <div class="row" style="justify-content:space-between"><b>${esc(o.order_number)}</b><span class="badge ${o.status}">${stLabel[o.status]||o.status}</span></div>
     <div class="muted">${esc(o.customer_name)} · ${esc(o.phone)}</div><div class="muted">${esc(o.address)}</div>
-    <ul>${(o.order_items||[]).map(i=>`<li>${esc(i.product_name)} × ${i.quantity} — ৳${i.unit_price*i.quantity}</li>`).join("")}</ul>
-    <div class="muted">ডেলিভারি ৳${o.delivery_charge}</div><b>সর্বমোট ৳${o.total}</b>
-    ${o.status==="pending"?`<div class="row" style="margin-top:10px"><button class="btn" onclick="act('${o.id}','confirm',this)">কনফার্ম করে SteadFast-এ পাঠান</button><button class="btn red" onclick="act('${o.id}','cancel',this)">বাতিল</button></div>`:""}
+    <ul>${(o.order_items||[]).map(i => `<li>${esc(i.product_name)} × ${i.quantity} — ৳${i.unit_price*i.quantity}</li>`).join("")}</ul>
+    ${o.consignment_id ? `<div class="muted">SteadFast ID: <b>${esc(o.consignment_id)}</b> · ট্র্যাকিং: <b>${esc(o.tracking_code||"-")}</b>${o.courier_status?` · ${csLabel[o.courier_status]||esc(o.courier_status)}`:""}</div>` : ""}
+    <div class="muted">পণ্য ৳${o.subtotal} + ডেলিভারি ৳${o.delivery_charge} (কাস্টমার দেবে, বিক্রয়ে ধরা হয়নি)</div>
+    <b>কুরিয়ার COD: ৳${o.total}</b>
+    ${o.status==="pending" ? `<div class="row" style="margin-top:10px"><button class="btn" onclick="act('${o.id}','confirm',this)">কনফার্ম করে SteadFast-এ পাঠান</button><button class="btn red" onclick="act('${o.id}','cancel',this)">বাতিল</button></div>` : ""}
   </div>`).join("") : `<p class="muted" style="text-align:center;padding:30px">এই তালিকায় কোনো অর্ডার নেই।</p>`);
 }
 async function act(id, action, btn){
   btn.disabled = true; btn.textContent = "অপেক্ষা করুন...";
-  try{ const d = await api("confirm-order", {order_id:id, action}); ORDERS.find(o=>o.id===id).status = d.status; toast(action==="confirm"?"SteadFast-এ বুকিং হয়েছে ✓":"বাতিল হয়েছে"); }
-  catch(e){ toast("এরর: " + e.message); }
-  renderOrders();
+  try{ await api("confirm-order", {order_id:id, action}); await reloadOrders(); toast(action==="confirm"?"SteadFast-এ বুকিং হয়েছে ✓":"বাতিল হয়েছে"); }
+  catch(e){ toast("এরর: " + e.message); renderOrders(); }
+}
+async function reloadOrders(){ ORDERS = (await api("list-orders", null, "GET")).orders || []; renderOrders(); }
+async function syncNow(btn){
+  btn.disabled = true; btn.textContent = "আপডেট হচ্ছে...";
+  try{ const d = await api("sync-status", {}); await reloadOrders(); toast(`${d.checked}টা চেক হয়েছে, ${d.updated}টার স্ট্যাটাস বদলেছে`); }
+  catch(e){ toast("এরর: " + e.message); renderOrders(); }
 }
 
 /* ---------- PRODUCTS ---------- */

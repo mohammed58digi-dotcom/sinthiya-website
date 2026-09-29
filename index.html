@@ -236,7 +236,7 @@
         <div class="field"><label>মোবাইল নাম্বার</label><input type="tel" id="custPhone" placeholder="01XXXXXXXXX" required></div>
         <div class="field"><label>সম্পূর্ণ ঠিকানা</label><textarea id="custAddress" rows="2" placeholder="বাসা/রোড/থানা/জেলা" required></textarea></div>
         <div class="field"><label>জেলা</label><select id="custDistrict" required><option value="">জেলা বেছে নিন</option></select></div>
-        <div class="field"><label>থানা / উপজেলা</label><input type="text" id="custThana" placeholder="থানা বা উপজেলার নাম" required></div>
+        <div class="field"><label>থানা / উপজেলা</label><select id="custThana" required><option value="">আগে জেলা বেছে নিন</option></select></div>
         <button type="submit" class="submit-btn" id="submitBtn">অর্ডার নিশ্চিত করুন</button>
         <div class="form-msg" id="formMsg"></div>
       </form>
@@ -267,9 +267,34 @@ const ANON_KEY = "sb_publishable_7DjL6HMbAKC2BSe518DNbg_sD1KEMgI";
 
 let PRODUCTS = [];
 let selectedKey = null, qty = 1, district = "", userPicked = false;
-const DIST = "ঢাকা,গাজীপুর,নারায়ণগঞ্জ,নরসিংদী,মানিকগঞ্জ,মুন্সীগঞ্জ,টাঙ্গাইল,কিশোরগঞ্জ,ফরিদপুর,গোপালগঞ্জ,মাদারীপুর,রাজবাড়ী,শরীয়তপুর,চট্টগ্রাম,কক্সবাজার,কুমিল্লা,ফেনী,ব্রাহ্মণবাড়িয়া,চাঁদপুর,লক্ষ্মীপুর,নোয়াখালী,খাগড়াছড়ি,রাঙ্গামাটি,বান্দরবান,সিলেট,মৌলভীবাজার,হবিগঞ্জ,সুনামগঞ্জ,বরিশাল,ভোলা,পটুয়াখালী,পিরোজপুর,ঝালকাঠি,বরগুনা,খুলনা,বাগেরহাট,সাতক্ষীরা,যশোর,ঝিনাইদহ,মাগুরা,নড়াইল,কুষ্টিয়া,চুয়াডাঙ্গা,মেহেরপুর,রাজশাহী,নাটোর,নওগাঁ,চাঁপাইনবাবগঞ্জ,পাবনা,সিরাজগঞ্জ,বগুড়া,জয়পুরহাট,রংপুর,গাইবান্ধা,কুড়িগ্রাম,লালমনিরহাট,নীলফামারী,দিনাজপুর,পঞ্চগড়,ঠাকুরগাঁও,ময়মনসিংহ,জামালপুর,শেরপুর,নেত্রকোণা".split(",");
 const DHAKA_ZONE = ["ঢাকা","গাজীপুর","নারায়ণগঞ্জ"];
 const delivery = ()=> !district ? 0 : (DHAKA_ZONE.includes(district) ? 80 : 130);
+let DISTRICTS_DATA = [];
+async function loadDistrictThana(){
+  const dSel = document.getElementById("custDistrict");
+  const tSel = document.getElementById("custThana");
+  try{
+    const res = await fetch("https://raw.githubusercontent.com/arijit4/bdAPI/refs/heads/master/all_districts.json");
+    const data = await res.json();
+    DISTRICTS_DATA = data.map(d=>({...d, bn_name:d.bn_name.trim(), sub_districts:{...d.sub_districts, list:d.sub_districts.list.map(u=>({...u, bn_name:u.bn_name.trim()}))}}))
+      .sort((a,b)=> a.bn_name.localeCompare(b.bn_name,"bn"));
+    DISTRICTS_DATA.forEach(d=>{ const o=document.createElement("option"); o.value=d.bn_name; o.textContent=d.bn_name; dSel.appendChild(o); });
+  }catch(e){
+    console.error("district list load failed, falling back to text input", e);
+    tSel.outerHTML = '<input type="text" id="custThana" placeholder="থানা বা উপজেলার নাম" required>';
+  }
+}
+function populateThana(distName){
+  const tSel = document.getElementById("custThana");
+  if(!tSel || tSel.tagName !== "SELECT") return;
+  tSel.innerHTML = "";
+  const d = DISTRICTS_DATA.find(x=>x.bn_name===distName);
+  if(!d){ tSel.innerHTML = '<option value="">আগে জেলা বেছে নিন</option>'; return; }
+  tSel.innerHTML = '<option value="">থানা বেছে নিন</option>';
+  d.sub_districts.list.slice().sort((a,b)=>a.bn_name.localeCompare(b.bn_name,"bn")).forEach(u=>{
+    const o=document.createElement("option"); o.value=u.bn_name; o.textContent=u.bn_name; tSel.appendChild(o);
+  });
+}
 
 async function loadProducts(){
   const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&active=eq.true&order=sort_order.asc`, {
@@ -338,9 +363,8 @@ function updateSummary(){
 document.getElementById("productSelect").addEventListener("change", e=>{ selectedKey = e.target.value; renderProducts(); updateSummary(); });
 document.getElementById("qtyMinus").addEventListener("click", ()=>{ qty = Math.max(1, qty-1); updateSummary(); });
 document.getElementById("qtyPlus").addEventListener("click", ()=>{ qty = Math.min(20, qty+1); updateSummary(); });
-const dSel = document.getElementById("custDistrict");
-DIST.forEach(x=>{ const o=document.createElement("option"); o.value=o.textContent=x; dSel.appendChild(o); });
-dSel.addEventListener("change", e=>{ district = e.target.value; updateSummary(); });
+loadDistrictThana();
+document.getElementById("custDistrict").addEventListener("change", e=>{ district = e.target.value; populateThana(district); updateSummary(); });
 
 document.getElementById("orderForm").addEventListener("submit", async (e)=>{
   e.preventDefault();

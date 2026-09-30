@@ -156,35 +156,11 @@
 </head>
 <body>
 
-<div id="acctOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:20px;">
-  <div id="acctBox" style="background:#fff;border-radius:16px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto;padding:24px;position:relative;">
-    <button id="acctClose" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink-soft);">&times;</button>
-    <div id="acctLoginView">
-      <h3 style="font-family:'Baloo Da 2',sans-serif;font-size:20px;margin:0 0 6px;">আমার অ্যাকাউন্ট</h3>
-      <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 18px;">অর্ডারের সময় যে ফোন নাম্বার ও পাসওয়ার্ড দিয়েছিলেন তা দিন</p>
-      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">মোবাইল নাম্বার</label>
-      <input type="tel" id="acctPhone" placeholder="01XXXXXXXXX" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin-bottom:12px;font:inherit;">
-      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">পাসওয়ার্ড</label>
-      <input type="password" id="acctPass" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin-bottom:14px;font:inherit;">
-      <button id="acctLoginBtn" style="width:100%;padding:12px;background:var(--ink);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font:inherit;">লগইন করুন</button>
-      <p id="acctMsg" style="font-size:13.5px;color:var(--danger);margin-top:10px;min-height:18px;"></p>
-      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:14px;">অ্যাকাউন্ট নেই? অর্ডার করার সময় পাসওয়ার্ড দিলেই অ্যাকাউন্ট তৈরি হয়ে যাবে।</p>
-    </div>
-    <div id="acctOrdersView" style="display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <h3 style="font-family:'Baloo Da 2',sans-serif;font-size:20px;margin:0;">আমার অর্ডারসমূহ</h3>
-        <button id="acctLogout" style="font-size:12.5px;color:var(--ink-soft);background:none;border:none;text-decoration:underline;cursor:pointer;">লগআউট</button>
-      </div>
-      <div id="acctOrdersList"></div>
-    </div>
-  </div>
-</div>
-
 <header class="site">
   <div class="wrap">
     <div class="brand">Sinthiya</div>
     <div style="display:flex;gap:10px;align-items:center;">
-      <a href="#" id="accountLink" style="font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;">আমার অ্যাকাউন্ট</a>
+      <a href="account.html" style="font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;">আমার অ্যাকাউন্ট</a>
       <a href="#order" class="header-cta">অর্ডার করুন</a>
     </div>
   </div>
@@ -193,7 +169,7 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <span class="pill">🌿 ১০০% কোল্ড প্রেসড অর্গানিক তেল</span>
+      <span class="pill">🌿 ১০০% কোল্ড প্রেসড অর্গানিক</span>
       <h1>চুলের গোড়ায় <em>আসল</em> যত্ন পৌঁছে দিন</h1>
       <p class="lead">নারিকেল থেকে কোল্ড প্রেসে বের করা তেল, ভেষজ মিশিয়ে রোদে ইনফিউজড — কোনো কেমিক্যাল ছাড়া।</p>
       <div class="trust-row">
@@ -264,7 +240,7 @@
         <div class="field"><label>সম্পূর্ণ ঠিকানা</label><textarea id="custAddress" rows="2" placeholder="বাসা/রোড/থানা/জেলা" required></textarea></div>
         <div class="field"><label>জেলা</label><select id="custDistrict" required><option value="">জেলা বেছে নিন</option></select></div>
         <div class="field"><label>থানা / উপজেলা</label><select id="custThana" required><option value="">আগে জেলা বেছে নিন</option></select></div>
-        <div class="field"><label>পাসওয়ার্ড (ঐচ্ছিক — পরে অর্ডার ট্র্যাক করতে চাইলে দিন)</label><input type="password" id="custPassword" placeholder="একটা পাসওয়ার্ড দিন (না দিলেও চলবে)" minlength="4"></div>
+        <div class="field"><label>পাসওয়ার্ড</label><input type="password" id="custPassword" placeholder="পরে অর্ডার ট্র্যাক করতে এই পাসওয়ার্ড দিয়ে লগইন করবেন" minlength="4" required></div>
         <button type="submit" class="submit-btn" id="submitBtn">অর্ডার নিশ্চিত করুন</button>
         <div class="form-msg" id="formMsg"></div>
       </form>
@@ -407,13 +383,13 @@ document.getElementById("orderForm").addEventListener("submit", async (e)=>{
   try{
     const res = await fetch(`${FN_BASE}/create-order`, {
       method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ customer_name:name, phone, address, district, thana:document.getElementById("custThana").value.trim(), items:[{product_id:productId, quantity:qty}], password: document.getElementById("custPassword").value || undefined }),
+      body: JSON.stringify({ customer_name:name, phone, address, district, thana:document.getElementById("custThana").value.trim(), items:[{product_id:productId, quantity:qty}], password: document.getElementById("custPassword").value }),
     });
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || "অর্ডার ব্যর্থ হয়েছে");
     /* fbq('track','Lead'); // pixel event once ID added */
     msg.className = "form-msg ok";
-    msg.textContent = `অর্ডার সফল হয়েছে! অর্ডার নাম্বার: ${data.order_number} — মোট ৳${data.total}। আমরা শীঘ্রই কল করব।` + (data.account_created ? " আপনার অ্যাকাউন্ট তৈরি হয়েছে, উপরে 'আমার অ্যাকাউন্ট' থেকে লগইন করে ট্র্যাক করতে পারবেন।" : "");
+    msg.textContent = `অর্ডার সফল হয়েছে! অর্ডার নাম্বার: ${data.order_number} — মোট ৳${data.total}। "আমার অ্যাকাউন্ট"-এ গিয়ে এই নাম্বার ও পাসওয়ার্ড দিয়ে লগইন করে ট্র্যাক করতে পারবেন।`;
     document.getElementById("orderForm").reset(); qty = 1; district = "";
     updateSummary();
   }catch(err){ msg.className = "form-msg err"; msg.textContent = "কিছু ভুল হয়েছে: " + err.message; }
@@ -437,57 +413,6 @@ async function loadExtras(){
 }
 loadProducts(); loadExtras();
 
-/* ---------- ACCOUNT / TRACKING ---------- */
-const stLabelPublic = {pending:"পেন্ডিং — নিশ্চিতকরণের অপেক্ষায়",confirmed:"কুরিয়ারে পাঠানো হয়েছে",delivered:"ডেলিভারড ✓",partial:"আংশিক ডেলিভারড",returned:"রিটার্ন হয়েছে",cancelled:"বাতিল হয়েছে"};
-function openAcct(){ document.getElementById("acctOverlay").style.display="flex"; }
-function closeAcct(){ document.getElementById("acctOverlay").style.display="none"; }
-document.getElementById("accountLink").addEventListener("click", e=>{ e.preventDefault(); openAcct(); });
-document.getElementById("acctClose").addEventListener("click", closeAcct);
-document.getElementById("acctOverlay").addEventListener("click", e=>{ if(e.target.id==="acctOverlay") closeAcct(); });
-
-async function doAcctLogin(){
-  const phone = document.getElementById("acctPhone").value.trim();
-  const pass = document.getElementById("acctPass").value;
-  const msg = document.getElementById("acctMsg");
-  msg.textContent = "যাচাই করা হচ্ছে...";
-  try{
-    const res = await fetch(`${FN_BASE}/customer-login`, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({phone, password:pass}) });
-    const data = await res.json();
-    if(!res.ok) throw new Error(data.error || "লগইন ব্যর্থ");
-    sessionStorage.setItem("sin_cust_phone", phone);
-    sessionStorage.setItem("sin_cust_pass", pass);
-    renderAcctOrders(data.orders);
-  }catch(e){ msg.textContent = e.message; }
-}
-document.getElementById("acctLoginBtn").addEventListener("click", doAcctLogin);
-document.getElementById("acctPass").addEventListener("keydown", e=>{ if(e.key==="Enter") doAcctLogin(); });
-
-function renderAcctOrders(orders){
-  document.getElementById("acctLoginView").style.display = "none";
-  document.getElementById("acctOrdersView").style.display = "block";
-  const list = document.getElementById("acctOrdersList");
-  if(!orders.length){ list.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;">এখনো কোনো অর্ডার নেই।</p>'; return; }
-  list.innerHTML = orders.map(o=>`
-    <div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:14.5px;"><span>${o.order_number}</span><span>${stLabelPublic[o.status]||o.status}</span></div>
-      <div style="font-size:13px;color:var(--ink-soft);margin-top:6px;">${(o.order_items||[]).map(i=>`${i.product_name} × ${i.quantity}`).join(", ")}</div>
-      <div style="font-size:13px;color:var(--ink-soft);margin-top:4px;">সর্বমোট: ৳${o.total}</div>
-      ${o.tracking_code ? `<div style="font-size:12.5px;color:var(--ink-soft);margin-top:4px;">ট্র্যাকিং কোড: ${o.tracking_code}</div>` : ""}
-    </div>`).join("");
-}
-
-document.getElementById("acctLogout").addEventListener("click", ()=>{
-  sessionStorage.removeItem("sin_cust_phone"); sessionStorage.removeItem("sin_cust_pass");
-  document.getElementById("acctOrdersView").style.display="none";
-  document.getElementById("acctLoginView").style.display="block";
-  document.getElementById("acctPhone").value=""; document.getElementById("acctPass").value=""; document.getElementById("acctMsg").textContent="";
-});
-
-const savedPhone = sessionStorage.getItem("sin_cust_phone"), savedPass = sessionStorage.getItem("sin_cust_pass");
-if(savedPhone && savedPass){
-  fetch(`${FN_BASE}/customer-login`, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({phone:savedPhone, password:savedPass}) })
-    .then(r=>r.json()).then(d=>{ if(d.success) renderAcctOrders(d.orders); });
-}
 </script>
 </body>
 </html>

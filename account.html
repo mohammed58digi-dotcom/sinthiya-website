@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>আমার অ্যাকাউন্ট — Sinthiya Organic Oil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Baloo+Da+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14171A; --ink-soft:#5A6169; --line:#E7E9EC;
+    --paper:#FFFFFF; --bg:#F6F8F7;
+    --brand:#0E9E6D; --brand-dark:#0A7A54; --brand-light:#E4F7EF;
+    --accent:#FFB020; --accent-dark:#E0940A; --danger:#D64545;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-family:"Hind Siliguri",system-ui,sans-serif;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); line-height:1.6;
+  }
+  h1,h2,h3{font-family:"Baloo Da 2","Hind Siliguri",sans-serif; font-weight:700; margin:0;}
+  .wrap{max-width:640px; margin:0 auto; padding:0 20px;}
+  header.site{background:var(--paper); border-bottom:1px solid var(--line); padding:14px 0;}
+  header.site .wrap{display:flex; align-items:center; justify-content:space-between;}
+  .brand{font-family:"Baloo Da 2",sans-serif; font-weight:800; font-size:21px; color:var(--brand-dark); text-decoration:none;}
+  .back{font-size:14px; font-weight:600; color:var(--ink); text-decoration:none;}
+
+  main{padding:40px 0 60px;}
+  .card{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:26px;}
+  label{display:block; font-size:13.5px; font-weight:600; margin:14px 0 6px;}
+  input{width:100%; padding:12px 13px; border-radius:10px; border:1px solid var(--line); font-family:inherit; font-size:15px;}
+  .btn{
+    margin-top:20px; width:100%; background:var(--accent); color:var(--ink); border:none; padding:14px;
+    border-radius:12px; font-weight:800; font-size:16px; cursor:pointer; font-family:"Baloo Da 2",sans-serif;
+    box-shadow:0 5px 0 var(--accent-dark);
+  }
+  .btn:disabled{opacity:.6;}
+  .err{color:var(--danger); font-size:13.5px; margin-top:12px; min-height:18px;}
+  .hint{font-size:13px; color:var(--ink-soft); margin-top:16px;}
+  .hint a{color:var(--brand-dark); font-weight:600;}
+
+  .greet{display:flex; justify-content:space-between; align-items:center; margin-bottom:22px;}
+  .greet h2{font-size:22px;}
+  .logout{font-size:13px; color:var(--ink-soft); background:none; border:1px solid var(--line); padding:8px 14px; border-radius:999px; cursor:pointer; font-family:inherit;}
+
+  .order-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px;}
+  .order-top{display:flex; justify-content:space-between; font-weight:700; font-size:15px;}
+  .badge{font-size:12px; padding:4px 11px; border-radius:999px; font-weight:700;}
+  .badge.pending{background:#F3E4C4; color:#9A6A10;}
+  .badge.confirmed{background:#DCE8F7; color:#245A9E;}
+  .badge.delivered{background:var(--brand-light); color:var(--brand-dark);}
+  .badge.partial{background:#F3E4C4; color:#9A6A10;}
+  .badge.returned, .badge.cancelled{background:#F3D6D1; color:var(--danger);}
+  .order-items{font-size:14px; color:var(--ink-soft); margin-top:8px;}
+  .order-foot{font-size:13.5px; color:var(--ink-soft); margin-top:8px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;}
+  .empty{text-align:center; color:var(--ink-soft); padding:40px 0; font-size:14.5px;}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a href="index.html" class="brand">Sinthiya</a>
+    <a href="index.html" class="back">← ওয়েবসাইটে ফিরুন</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="card" id="loginCard">
+      <h2 style="font-size:22px;margin-bottom:4px;">আমার অ্যাকাউন্ট</h2>
+      <p style="font-size:13.5px;color:var(--ink-soft);margin:6px 0 0;">অর্ডারের সময় যে মোবাইল নাম্বার ও পাসওয়ার্ড দিয়েছিলেন তা দিন</p>
+      <label>মোবাইল নাম্বার</label>
+      <input type="tel" id="loginPhone" placeholder="01XXXXXXXXX">
+      <label>পাসওয়ার্ড</label>
+      <input type="password" id="loginPass">
+      <button class="btn" id="loginBtn">লগইন করুন</button>
+      <p class="err" id="loginErr"></p>
+      <p class="hint">এখনো অ্যাকাউন্ট নেই? <a href="index.html#order">অর্ডার করুন</a> — পাসওয়ার্ড দিলেই অ্যাকাউন্ট তৈরি হয়ে যাবে।</p>
+    </div>
+
+    <div id="dashCard" style="display:none;">
+      <div class="greet">
+        <h2 id="greetName">স্বাগতম</h2>
+        <button class="logout" id="logoutBtn">লগআউট</button>
+      </div>
+      <div id="ordersList"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const FN_BASE = "https://jlussgczauobxfdigcpf.supabase.co/functions/v1";
+const stLabel = {pending:"পেন্ডিং — নিশ্চিতকরণের অপেক্ষায়",confirmed:"কুরিয়ারে পাঠানো হয়েছে",delivered:"ডেলিভারড ✓",partial:"আংশিক ডেলিভারড",returned:"রিটার্ন হয়েছে",cancelled:"বাতিল হয়েছে"};
+
+async function login(phone, password){
+  const res = await fetch(`${FN_BASE}/customer-login`, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({phone, password}) });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error || "লগইন ব্যর্থ হয়েছে");
+  return data;
+}
+
+function showDashboard(name, orders){
+  document.getElementById("loginCard").style.display = "none";
+  document.getElementById("dashCard").style.display = "block";
+  document.getElementById("greetName").textContent = name ? `স্বাগতম, ${name}` : "স্বাগতম";
+  const list = document.getElementById("ordersList");
+  if(!orders.length){ list.innerHTML = '<div class="card empty">এখনো কোনো অর্ডার নেই।</div>'; return; }
+  list.innerHTML = orders.map(o => `
+    <div class="order-card">
+      <div class="order-top"><span>${o.order_number}</span><span class="badge ${o.status}">${stLabel[o.status]||o.status}</span></div>
+      <div class="order-items">${(o.order_items||[]).map(i=>`${i.product_name} × ${i.quantity}`).join(", ")}</div>
+      <div class="order-foot">
+        <span>সর্বমোট: ৳${o.total}</span>
+        ${o.tracking_code ? `<span>ট্র্যাকিং: ${o.tracking_code}</span>` : ""}
+      </div>
+    </div>`).join("");
+}
+
+document.getElementById("loginBtn").addEventListener("click", async ()=>{
+  const phone = document.getElementById("loginPhone").value.trim();
+  const pass = document.getElementById("loginPass").value;
+  const err = document.getElementById("loginErr");
+  const btn = document.getElementById("loginBtn");
+  err.textContent = ""; btn.disabled = true; btn.textContent = "যাচাই করা হচ্ছে...";
+  try{
+    const data = await login(phone, pass);
+    sessionStorage.setItem("sin_cust_phone", phone);
+    sessionStorage.setItem("sin_cust_pass", pass);
+    showDashboard(data.name, data.orders);
+  }catch(e){ err.textContent = e.message; }
+  finally{ btn.disabled = false; btn.textContent = "লগইন করুন"; }
+});
+document.getElementById("loginPass").addEventListener("keydown", e=>{ if(e.key==="Enter") document.getElementById("loginBtn").click(); });
+
+document.getElementById("logoutBtn").addEventListener("click", ()=>{
+  sessionStorage.removeItem("sin_cust_phone"); sessionStorage.removeItem("sin_cust_pass");
+  document.getElementById("dashCard").style.display = "none";
+  document.getElementById("loginCard").style.display = "block";
+  document.getElementById("loginPhone").value = ""; document.getElementById("loginPass").value = "";
+});
+
+const savedPhone = sessionStorage.getItem("sin_cust_phone"), savedPass = sessionStorage.getItem("sin_cust_pass");
+if(savedPhone && savedPass){
+  login(savedPhone, savedPass).then(d => showDashboard(d.name, d.orders)).catch(()=>{
+    sessionStorage.removeItem("sin_cust_phone"); sessionStorage.removeItem("sin_cust_pass");
+  });
+}
+</script>
+</body>
+</html>

@@ -10,13 +10,15 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hind Siliguri",system-ui,sans-serif;padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0)}
 .wrap{max-width:820px;margin:0 auto;padding:16px}
-header{background:var(--ink);color:#fff;padding:14px 16px;font-weight:700}
+header{background:var(--ink);color:#fff;padding:14px 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+header span{font-size:12.5px;font-weight:500;opacity:.8}
 #login{max-width:340px;margin:70px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;text-align:center}
 input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;margin-top:4px}
 label{font-size:13px;color:var(--soft);font-weight:600;display:block;margin-top:10px}
 button{font:inherit;cursor:pointer}
 .btn{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:10px 16px;font-weight:700}
 .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)} .btn.red{background:#fff;color:var(--danger);border:1px solid var(--danger)}
+.link-btn{background:none;border:none;color:var(--brand);font-size:13px;text-decoration:underline;padding:0;margin-top:12px}
 .tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px}
 .tabs button{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;white-space:nowrap;font-weight:600}
 .tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -25,41 +27,58 @@ button{font:inherit;cursor:pointer}
 .badge{font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700;background:#F3E4C4;color:#9A6A10}
 .badge.confirmed{background:#DCE8F7;color:#245A9E} .badge.delivered{background:#D9EBDF;color:var(--dark)} .badge.partial{background:#F3E4C4;color:#9A6A10}
 .badge.cancelled,.badge.returned{background:#F3D6D1;color:var(--danger)}
+.badge.owner{background:#E4F7EF;color:var(--dark)} .badge.moderator{background:#EDEFF2;color:var(--soft)}
 .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{font-size:20px;display:block}.stat span{font-size:12.5px;color:var(--soft)}
 .muted{color:var(--soft);font-size:13.5px} .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;display:none;z-index:9}
 img.pv{width:100%;max-width:200px;border-radius:8px;display:block;margin-top:8px}
+.src-tag{font-size:11.5px;background:#EEF2F5;color:var(--soft);padding:2px 8px;border-radius:999px;margin-left:6px}
 </style>
 </head>
 <body>
 <div id="login">
   <h2 style="margin-top:0">অ্যাডমিন লগইন</h2>
-  <input type="password" id="pw" placeholder="পাসওয়ার্ড" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false">
-  <button class="btn" style="width:100%;margin-top:12px" id="loginBtn">প্রবেশ করুন</button>
+  <div id="loginFields">
+    <label>ইমেইল</label><input type="email" id="email" autocomplete="username">
+    <label>পাসওয়ার্ড</label><input type="password" id="pw" autocomplete="current-password">
+    <button class="btn" style="width:100%;margin-top:16px" id="loginBtn">প্রবেশ করুন</button>
+    <button class="link-btn" id="forgotBtn">পাসওয়ার্ড ভুলে গেছেন?</button>
+  </div>
+  <div id="forgotFields" style="display:none">
+    <p class="muted" style="text-align:left">আপনার ইমেইলে একটা পাসওয়ার্ড রিসেট লিংক পাঠানো হবে।</p>
+    <label>ইমেইল</label><input type="email" id="forgotEmail">
+    <button class="btn" style="width:100%;margin-top:16px" id="sendResetBtn">রিসেট লিংক পাঠান</button>
+    <button class="link-btn" id="backToLoginBtn">লগইনে ফিরে যান</button>
+  </div>
   <div id="loginMsg" style="color:var(--danger);font-size:13.5px;margin-top:10px;min-height:18px"></div>
 </div>
 
 <div id="app" style="display:none">
-  <header>Sinthiya Organic — অ্যাডমিন</header>
+  <header><span id="whoami"></span><span id="roleTag"></span></header>
   <div class="wrap">
     <div class="tabs" id="tabs">
       <button data-t="orders" class="on">অর্ডার</button><button data-t="products">প্রোডাক্ট</button>
       <button data-t="reviews">রিভিউ</button><button data-t="site">সাইট ছবি</button>
+      <button data-t="staff" id="staffTabBtn" style="display:none">মডারেটর</button>
     </div>
     <div id="orders"></div><div id="products" style="display:none"></div>
     <div id="reviews" style="display:none"></div><div id="site" style="display:none"></div>
+    <div id="staff" style="display:none"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-const FN = "https://jlussgczauobxfdigcpf.supabase.co/functions/v1";
-let PW = "", ORDERS = [], DATA = {products:[], reviews:[]}, ofilter = "pending";
+const SUPABASE_URL = "https://jlussgczauobxfdigcpf.supabase.co";
+const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdXNzZ2N6YXVvYnhmZGlnY3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODgwOTgsImV4cCI6MjEwNTY2NDA5OH0.9VedHmJeRP44Q0WcpAmXRzNgod473Oslk3oVrZpllzQ";
+const FN = `${SUPABASE_URL}/functions/v1`;
+let TOKEN = "", ROLE = "", ORDERS = [], DATA = {products:[], reviews:[]}, STAFF = [], ofilter = "pending";
+let DISTRICTS_DATA = [];
 const $ = id => document.getElementById(id);
 const esc = s => (s ?? "").toString().replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const toast = t => { $("toast").textContent = t; $("toast").style.display = "block"; setTimeout(()=>$("toast").style.display="none", 2800); };
 
 async function api(name, body, method = "POST"){
-  const res = await fetch(`${FN}/${name}`, { method, headers: {"Content-Type":"application/json","x-admin-password":PW}, body: method==="GET"?undefined:JSON.stringify(body) });
+  const res = await fetch(`${FN}/${name}`, { method, headers: {"Content-Type":"application/json","Authorization":`Bearer ${TOKEN}`}, body: method==="GET"?undefined:JSON.stringify(body) });
   const d = await res.json().catch(()=>({}));
   if(!res.ok) throw new Error(d.error || "ব্যর্থ হয়েছে");
   return d;
@@ -67,23 +86,64 @@ async function api(name, body, method = "POST"){
 const toB64 = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result.split(",")[1]); r.onerror = no; r.readAsDataURL(f); });
 async function uploadFile(file, folder){ const d = await api("admin-api", {action:"upload", folder, filename:file.name, image_base64: await toB64(file)}); return d.url; }
 
-async function login(){
-  const pw = $("pw").value.trim(); $("loginMsg").textContent = "যাচাই হচ্ছে...";
+/* ---------- LOGIN / FORGOT PASSWORD ---------- */
+$("forgotBtn").onclick = () => { $("loginFields").style.display="none"; $("forgotFields").style.display="block"; $("loginMsg").textContent=""; };
+$("backToLoginBtn").onclick = () => { $("forgotFields").style.display="none"; $("loginFields").style.display="block"; $("loginMsg").textContent=""; };
+
+$("sendResetBtn").onclick = async () => {
+  const email = $("forgotEmail").value.trim();
+  if(!email) return;
+  $("loginMsg").style.color = "var(--soft)"; $("loginMsg").textContent = "পাঠানো হচ্ছে...";
   try{
-    PW = pw; const d = await api("list-orders", null, "GET"); ORDERS = d.orders || [];
-    sessionStorage.setItem("sin_pw", pw); $("login").style.display = "none"; $("app").style.display = "block";
-    await loadData(); renderOrders();
-  }catch(e){ PW = ""; $("loginMsg").textContent = e.message === "unauthorized" ? "ভুল পাসওয়ার্ড।" : "সংযোগ ব্যর্থ: " + e.message; }
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+      method:"POST", headers:{"Content-Type":"application/json","apikey":ANON_KEY},
+      body: JSON.stringify({ email, options:{ redirect_to: location.origin + location.pathname.replace("admin.html","reset-password.html") } })
+    });
+    if(!res.ok) throw new Error("পাঠানো যায়নি");
+    $("loginMsg").style.color = "var(--brand)";
+    $("loginMsg").textContent = "ইমেইল পাঠানো হয়েছে — ইনবক্স (এবং স্প্যাম ফোল্ডার) চেক করুন।";
+  }catch(e){ $("loginMsg").style.color = "var(--danger)"; $("loginMsg").textContent = e.message; }
+};
+
+async function login(email, pw){
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method:"POST", headers:{"Content-Type":"application/json","apikey":ANON_KEY}, body: JSON.stringify({email, password:pw})
+  });
+  const d = await res.json();
+  if(!res.ok) throw new Error(d.error_description || d.msg || "লগইন ব্যর্থ");
+  return d.access_token;
 }
-$("loginBtn").onclick = login; $("pw").onkeydown = e => { if(e.key === "Enter") login(); };
-const saved = sessionStorage.getItem("sin_pw"); if(saved){ $("pw").value = saved; login(); }
+
+$("loginBtn").onclick = async () => {
+  const email = $("email").value.trim(), pw = $("pw").value;
+  $("loginMsg").style.color = "var(--danger)"; $("loginMsg").textContent = "যাচাই হচ্ছে...";
+  try{
+    TOKEN = await login(email, pw);
+    sessionStorage.setItem("sin_staff_token", TOKEN);
+    await boot();
+  }catch(e){ $("loginMsg").textContent = e.message === "Invalid login credentials" ? "ভুল ইমেইল বা পাসওয়ার্ড" : e.message; }
+};
+$("pw").onkeydown = e => { if(e.key === "Enter") $("loginBtn").click(); };
+
+async function boot(){
+  const d = await api("list-orders", null, "GET");
+  ORDERS = d.orders || []; ROLE = d.staff_role;
+  $("login").style.display = "none"; $("app").style.display = "block";
+  $("whoami").textContent = `Sinthiya Organic — ${d.staff_name}`;
+  $("roleTag").textContent = ROLE === "owner" ? "Owner" : "Moderator";
+  if(ROLE === "owner") $("staffTabBtn").style.display = "inline-block";
+  await loadData(); renderOrders(); loadDistricts();
+}
+const saved = sessionStorage.getItem("sin_staff_token");
+if(saved){ TOKEN = saved; boot().catch(()=>{ sessionStorage.removeItem("sin_staff_token"); }); }
 
 async function loadData(){ DATA = await api("admin-api", {action:"list_all"}); renderProducts(); renderReviews(); renderSite(); }
 
 $("tabs").onclick = e => {
   if(e.target.tagName !== "BUTTON") return;
   document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b === e.target));
-  ["orders","products","reviews","site"].forEach(t => $(t).style.display = t === e.target.dataset.t ? "block" : "none");
+  ["orders","products","reviews","site","staff"].forEach(t => $(t).style.display = t === e.target.dataset.t ? "block" : "none");
+  if(e.target.dataset.t === "staff") renderStaff();
 };
 
 /* ---------- ORDERS ---------- */
@@ -94,7 +154,7 @@ function monthStats(){
   const del = mo.filter(o => o.status === "delivered");
   const sales = del.reduce((s,o) => s + o.subtotal, 0);
   const cost = del.reduce((s,o) => s + (o.order_items||[]).reduce((a,i) => a + i.unit_cost*i.quantity, 0), 0);
-  return { sent: mo.filter(o => ["confirmed","delivered","partial","returned"].includes(o.status)).length, transit: mo.filter(o => o.status==="confirmed").length, del: del.length, ret: mo.filter(o => o.status==="returned").length, sales, profit: sales - cost };
+  return { transit: mo.filter(o => o.status==="confirmed").length, del: del.length, ret: mo.filter(o => o.status==="returned").length, sales, profit: sales - cost };
 }
 function renderOrders(){
   const s = monthStats();
@@ -102,16 +162,17 @@ function renderOrders(){
   $("orders").innerHTML =
   `<div class="muted" style="margin-bottom:6px">এই মাসের হিসাব (শুধু ডেলিভারড অর্ডারের পণ্যমূল্য — ডেলিভারি চার্জ বাদে)</div>
    <div class="row" style="margin-bottom:12px">
-     <div class="stat"><b>৳${s.sales}</b><span>বিক্রয়</span></div><div class="stat"><b>৳${s.profit}</b><span>লাভ (কেনা দাম বাদে)</span></div>
+     <div class="stat"><b>৳${s.sales}</b><span>বিক্রয়</span></div><div class="stat"><b>৳${s.profit}</b><span>লাভ</span></div>
      <div class="stat"><b>${s.del}</b><span>ডেলিভারড</span></div><div class="stat"><b>${s.transit}</b><span>পথে আছে</span></div><div class="stat"><b>${s.ret}</b><span>রিটার্ন</span></div></div>
-   <div class="row" style="margin-bottom:12px"><button class="btn ghost" onclick="syncNow(this)">🔄 SteadFast থেকে স্ট্যাটাস আপডেট</button></div>
+   <div class="row" style="margin-bottom:12px"><button class="btn ghost" onclick="syncNow(this)">🔄 SteadFast স্ট্যাটাস</button><button class="btn" onclick="openManualOrder()">+ WhatsApp অর্ডার যোগ করুন</button></div>
+   <div id="manualOrderBox"></div>
    <div class="tabs">${["pending","confirmed","delivered","returned","cancelled","all"].map(f => `<button class="${f===ofilter?"on":""}" onclick="ofilter='${f}';renderOrders()">${stLabel[f]||"সব"}</button>`).join("")}</div>` +
   (list.length ? list.map(o => `<div class="card">
-    <div class="row" style="justify-content:space-between"><b>${esc(o.order_number)}</b><span class="badge ${o.status}">${stLabel[o.status]||o.status}</span></div>
+    <div class="row" style="justify-content:space-between"><b>${esc(o.order_number)}${o.source!=='website'?`<span class="src-tag">${o.source==='whatsapp'?'WhatsApp':'ম্যানুয়াল'}</span>`:''}</b><span class="badge ${o.status}">${stLabel[o.status]||o.status}</span></div>
     <div class="muted">${esc(o.customer_name)} · ${esc(o.phone)}</div><div class="muted">${esc(o.address)}</div>
     <ul>${(o.order_items||[]).map(i => `<li>${esc(i.product_name)} × ${i.quantity} — ৳${i.unit_price*i.quantity}</li>`).join("")}</ul>
     ${o.consignment_id ? `<div class="muted">SteadFast ID: <b>${esc(o.consignment_id)}</b> · ট্র্যাকিং: <b>${esc(o.tracking_code||"-")}</b>${o.courier_status?` · ${csLabel[o.courier_status]||esc(o.courier_status)}`:""}</div>` : ""}
-    <div class="muted">পণ্য ৳${o.subtotal} + ডেলিভারি ৳${o.delivery_charge} (কাস্টমার দেবে, বিক্রয়ে ধরা হয়নি)</div>
+    <div class="muted">পণ্য ৳${o.subtotal} + ডেলিভারি ৳${o.delivery_charge} (কাস্টমার দেবে)</div>
     <b>কুরিয়ার COD: ৳${o.total}</b>
     ${o.status==="pending" ? `<div class="row" style="margin-top:10px"><button class="btn" onclick="act('${o.id}','confirm',this)">কনফার্ম করে SteadFast-এ পাঠান</button><button class="btn red" onclick="act('${o.id}','cancel',this)">বাতিল</button></div>` : ""}
   </div>`).join("") : `<p class="muted" style="text-align:center;padding:30px">এই তালিকায় কোনো অর্ডার নেই।</p>`);
@@ -121,11 +182,58 @@ async function act(id, action, btn){
   try{ await api("confirm-order", {order_id:id, action}); await reloadOrders(); toast(action==="confirm"?"SteadFast-এ বুকিং হয়েছে ✓":"বাতিল হয়েছে"); }
   catch(e){ toast("এরর: " + e.message); renderOrders(); }
 }
-async function reloadOrders(){ ORDERS = (await api("list-orders", null, "GET")).orders || []; renderOrders(); }
+async function reloadOrders(){ const d = await api("list-orders", null, "GET"); ORDERS = d.orders || []; renderOrders(); }
 async function syncNow(btn){
   btn.disabled = true; btn.textContent = "আপডেট হচ্ছে...";
   try{ const d = await api("sync-status", {}); await reloadOrders(); toast(`${d.checked}টা চেক হয়েছে, ${d.updated}টার স্ট্যাটাস বদলেছে`); }
   catch(e){ toast("এরর: " + e.message); renderOrders(); }
+}
+
+/* ---------- MANUAL (WHATSAPP) ORDER ---------- */
+async function loadDistricts(){
+  try{
+    const res = await fetch("https://raw.githubusercontent.com/arijit4/bdAPI/refs/heads/master/all_districts.json");
+    const data = await res.json();
+    DISTRICTS_DATA = data.map(d=>({...d, bn_name:d.bn_name.trim(), sub_districts:{...d.sub_districts, list:d.sub_districts.list.map(u=>({...u,bn_name:u.bn_name.trim()}))}}))
+      .sort((a,b)=>a.bn_name.localeCompare(b.bn_name,"bn"));
+  }catch(e){ console.error("district load failed", e); }
+}
+function openManualOrder(){
+  const box = $("manualOrderBox");
+  if(box.innerHTML){ box.innerHTML = ""; return; }
+  const distOpts = DISTRICTS_DATA.map(d=>`<option value="${esc(d.bn_name)}">${esc(d.bn_name)}</option>`).join("");
+  const prodOpts = DATA.products.filter(p=>p.active!==false).map(p=>`<option value="${p.id}">${esc(p.name)} — ৳${p.price}</option>`).join("");
+  box.innerHTML = `<div class="card">
+    <b>WhatsApp থেকে পাওয়া অর্ডার এন্ট্রি দিন</b>
+    <label>কাস্টমারের নাম</label><input id="mo_name">
+    <label>মোবাইল নাম্বার</label><input id="mo_phone" placeholder="01XXXXXXXXX">
+    <div class="row"><div><label>জেলা</label><select id="mo_dist"><option value="">বেছে নিন</option>${distOpts}</select></div>
+    <div><label>থানা (ঐচ্ছিক)</label><input id="mo_thana"></div></div>
+    <label>সম্পূর্ণ ঠিকানা</label><textarea id="mo_addr" rows="2"></textarea>
+    <div class="row"><div><label>প্রোডাক্ট</label><select id="mo_prod">${prodOpts}</select></div><div><label>পরিমাণ</label><input id="mo_qty" type="number" value="1" min="1"></div></div>
+    <label>ডেলিভারি চার্জ (ফাঁকা রাখলে জেলা অনুযায়ী অটো বসবে)</label><input id="mo_delivery" type="number" placeholder="৮০ বা ১৩০">
+    <label>নোট (ঐচ্ছিক)</label><input id="mo_notes">
+    <button class="btn" style="width:100%;margin-top:14px" onclick="submitManualOrder()">অর্ডার সেভ করুন</button>
+    <p class="muted" id="mo_msg" style="margin-top:8px"></p>
+  </div>`;
+}
+async function submitManualOrder(){
+  const msg = $("mo_msg");
+  const order = {
+    customer_name: $("mo_name").value.trim(), phone: $("mo_phone").value.trim(), district: $("mo_dist").value,
+    thana: $("mo_thana").value.trim(), address: $("mo_addr").value.trim(),
+    items: [{ product_id: $("mo_prod").value, quantity: +$("mo_qty").value || 1 }],
+    notes: $("mo_notes").value.trim(),
+  };
+  const dv = $("mo_delivery").value; if(dv) order.delivery_charge = +dv;
+  if(!order.customer_name || !order.phone || !order.district || !order.address){ msg.textContent = "নাম, ফোন, জেলা, ঠিকানা দিন।"; return; }
+  msg.textContent = "সেভ হচ্ছে...";
+  try{
+    const d = await api("admin-api", { action:"manual_order", order });
+    toast(`অর্ডার তৈরি হয়েছে: ${d.order_number}`);
+    $("manualOrderBox").innerHTML = "";
+    await reloadOrders();
+  }catch(e){ msg.textContent = "এরর: " + e.message; }
 }
 
 /* ---------- PRODUCTS ---------- */
@@ -135,10 +243,10 @@ function productForm(p){
     <b>${p.id ? esc(p.name) : "নতুন প্রোডাক্ট"}</b>
     <label>নাম</label><input id="n-${id}" value="${esc(p.name)}">
     <div class="row"><div><label>বিক্রয় মূল্য (৳)</label><input id="pr-${id}" type="number" value="${p.price ?? ""}"></div><div><label>কেনা মূল্য (৳)</label><input id="co-${id}" type="number" value="${p.cost ?? ""}"></div><div><label>সিরিয়াল</label><input id="so-${id}" type="number" value="${p.sort_order ?? 0}"></div></div>
-    <label>বিবরণ (Description)</label><textarea id="de-${id}" rows="2">${esc(p.description)}</textarea>
+    <label>বিবরণ</label><textarea id="de-${id}" rows="2">${esc(p.description)}</textarea>
     <div class="row"><div><label>তেল (মিলি)</label><input id="oi-${id}" type="number" value="${p.oil_ml ?? ""}"></div><div><label>হেয়ার প্যাক (গ্রাম)</label><input id="hp-${id}" type="number" value="${p.hairpack_g ?? ""}"></div><div><label>শ্যাম্পু (মিলি)</label><input id="sh-${id}" type="number" value="${p.shampoo_ml ?? ""}"></div></div>
     <label>ছবি</label>${p.image_url?`<img class="pv" src="${esc(p.image_url)}">`:""}<input type="file" accept="image/*" id="im-${id}">
-    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ac-${id}" ${p.active!==false?"checked":""} style="width:auto;margin:0"> সাইটে দেখাবে (Active)</label>
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ac-${id}" ${p.active!==false?"checked":""} style="width:auto;margin:0"> সাইটে দেখাবে</label>
     <button class="btn" style="margin-top:12px;width:100%" onclick="saveProduct('${id}','${esc(p.image_url||"")}')">সেভ করুন</button>
   </div>`;
 }
@@ -182,6 +290,37 @@ async function saveHero(){
   const f = $("hi").files[0]; if(!f) return toast("ছবি বেছে নিন");
   try{ const url = await uploadFile(f, "site"); await api("admin-api", {action:"set_setting", key:"hero_image_url", value:url}); toast("হোমপেজের ছবি বদলেছে ✓"); }
   catch(e){ toast("এরর: " + e.message); }
+}
+
+/* ---------- STAFF / MODERATORS (owner only) ---------- */
+async function renderStaff(){
+  $("staff").innerHTML = `<div class="card">লোড হচ্ছে...</div>`;
+  try{ const d = await api("staff-api", {action:"list"}); STAFF = d.staff; }catch(e){ $("staff").innerHTML = `<div class="card">${e.message}</div>`; return; }
+  $("staff").innerHTML = `<div class="card">
+    <b>নতুন মডারেটর যোগ করুন</b>
+    <label>নাম</label><input id="st_name">
+    <label>ইমেইল</label><input id="st_email" type="email">
+    <label>সাময়িক পাসওয়ার্ড (কমপক্ষে ৬ ক্যারেক্টার)</label><input id="st_pw" type="password">
+    <p class="muted">মডারেটরকে এই ইমেইল ও পাসওয়ার্ড জানিয়ে দিন — পরে তারা চাইলে "পাসওয়ার্ড ভুলে গেছেন" দিয়ে নিজেরটা বদলে নিতে পারবে।</p>
+    <button class="btn" style="width:100%;margin-top:8px" onclick="inviteStaff()">যোগ করুন</button>
+    <p class="muted" id="st_msg"></p>
+  </div>` + STAFF.map(s => `<div class="card">
+    <div class="row" style="justify-content:space-between"><b>${esc(s.name||s.email)}</b><span class="badge ${s.role}">${s.role==='owner'?'Owner':'Moderator'}</span></div>
+    <div class="muted">${esc(s.email)}</div>
+    ${s.role!=='owner' ? `<button class="btn red" style="margin-top:10px" onclick="removeStaff('${s.id}')">সরিয়ে দিন</button>` : ""}
+  </div>`).join("");
+}
+async function inviteStaff(){
+  const msg = $("st_msg");
+  const email = $("st_email").value.trim(), pw = $("st_pw").value, name = $("st_name").value.trim();
+  if(!email || pw.length < 6){ msg.textContent = "ইমেইল ও কমপক্ষে ৬ ক্যারেক্টারের পাসওয়ার্ড দিন।"; return; }
+  msg.textContent = "যোগ করা হচ্ছে...";
+  try{ await api("staff-api", {action:"invite", email, password:pw, name}); toast("মডারেটর যোগ হয়েছে ✓"); renderStaff(); }
+  catch(e){ msg.textContent = "এরর: " + e.message; }
+}
+async function removeStaff(id){
+  if(!confirm("এই মডারেটরকে সরিয়ে দেবেন?")) return;
+  try{ await api("staff-api", {action:"remove", id}); toast("সরানো হয়েছে"); renderStaff(); }catch(e){ toast("এরর: " + e.message); }
 }
 </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>আমার অ্যাকাউন্ট — Sinthiya Organic Oil</title>
+<title>Log In — Sinthiya Organic Oil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Baloo+Da+2:wght@600;700;800&display=swap" rel="stylesheet">
@@ -78,7 +78,22 @@
       <input type="password" id="loginPass">
       <button class="btn" id="loginBtn">লগইন করুন</button>
       <p class="err" id="loginErr"></p>
+      <button id="showForgot" style="background:none;border:none;color:var(--brand-dark);font-size:13px;font-weight:600;text-decoration:underline;cursor:pointer;margin-top:6px;">পাসওয়ার্ড ভুলে গেছেন?</button>
       <p class="hint">এখনো অ্যাকাউন্ট নেই? <a href="index.html#order">অর্ডার করুন</a> — পাসওয়ার্ড দিলেই অ্যাকাউন্ট তৈরি হয়ে যাবে।</p>
+    </div>
+
+    <div class="card" id="forgotCard" style="display:none;">
+      <h2 style="font-size:20px;margin-bottom:4px;">পাসওয়ার্ড রিসেট</h2>
+      <p style="font-size:13.5px;color:var(--ink-soft);margin:6px 0 0;">আপনার মোবাইল নাম্বার আর যেকোনো একটা পুরনো অর্ডার নাম্বার (যেমন SIN-00012) দিন — এটা অর্ডার কনফার্মেশন মেসেজে পাবেন।</p>
+      <label>মোবাইল নাম্বার</label>
+      <input type="tel" id="fpPhone" placeholder="01XXXXXXXXX">
+      <label>অর্ডার নাম্বার</label>
+      <input type="text" id="fpOrder" placeholder="SIN-00012">
+      <label>নতুন পাসওয়ার্ড</label>
+      <input type="password" id="fpNewPass">
+      <button class="btn" id="fpSubmit">পাসওয়ার্ড বদলান</button>
+      <p class="err" id="fpErr"></p>
+      <button id="backToLoginCard" style="background:none;border:none;color:var(--ink-soft);font-size:13px;text-decoration:underline;cursor:pointer;margin-top:4px;">লগইনে ফিরে যান</button>
     </div>
 
     <div id="dashCard" style="display:none;">
@@ -135,6 +150,34 @@ document.getElementById("loginBtn").addEventListener("click", async ()=>{
   finally{ btn.disabled = false; btn.textContent = "লগইন করুন"; }
 });
 document.getElementById("loginPass").addEventListener("keydown", e=>{ if(e.key==="Enter") document.getElementById("loginBtn").click(); });
+
+document.getElementById("showForgot").addEventListener("click", ()=>{
+  document.getElementById("loginCard").style.display = "none";
+  document.getElementById("forgotCard").style.display = "block";
+});
+document.getElementById("backToLoginCard").addEventListener("click", ()=>{
+  document.getElementById("forgotCard").style.display = "none";
+  document.getElementById("loginCard").style.display = "block";
+  document.getElementById("fpErr").textContent = "";
+});
+document.getElementById("fpSubmit").addEventListener("click", async ()=>{
+  const phone = document.getElementById("fpPhone").value.trim();
+  const order_number = document.getElementById("fpOrder").value.trim();
+  const new_password = document.getElementById("fpNewPass").value;
+  const err = document.getElementById("fpErr");
+  const btn = document.getElementById("fpSubmit");
+  err.style.color = "var(--danger)"; err.textContent = "";
+  btn.disabled = true; btn.textContent = "যাচাই করা হচ্ছে...";
+  try{
+    const res = await fetch(`${FN_BASE}/customer-reset-password`, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({phone, order_number, new_password}) });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "ব্যর্থ হয়েছে");
+    err.style.color = "var(--brand-dark)";
+    err.textContent = "পাসওয়ার্ড বদলানো হয়েছে ✓ এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।";
+    document.getElementById("fpPhone").value = ""; document.getElementById("fpOrder").value = ""; document.getElementById("fpNewPass").value = "";
+  }catch(e){ err.textContent = e.message; }
+  finally{ btn.disabled = false; btn.textContent = "পাসওয়ার্ড বদলান"; }
+});
 
 document.getElementById("logoutBtn").addEventListener("click", ()=>{
   sessionStorage.removeItem("sin_cust_phone"); sessionStorage.removeItem("sin_cust_pass");
